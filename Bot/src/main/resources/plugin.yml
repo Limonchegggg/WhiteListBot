@@ -1,0 +1,22 @@
+main: Main.Main
+version: 0.0.1
+name: WhiteListBot
+author: Limonchegggg
+api-version: 1.18
+commands:
+    wladd:
+      description: Добавление игроков в вл
+      permission: bwt.admin
+    removewl:
+      description: Удаление игроков из вл
+      permission: bwt.admin
+    connection:
+      description: Проверка подключения к базе
+      permission: bwt.admin
+    v:
+      description: ВАаниш
+      permission: bwt.vanish
+permissions:
+    admin:
+        description: метка на админа
+      
