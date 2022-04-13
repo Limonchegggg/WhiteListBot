@@ -33,11 +33,7 @@ public class TeleMessageMinecraft implements Listener{
 		if(message.get(player.getName()).contains(messages)) {
 			int time = times.get(player.getName())+1;
 			times.replace(player.getName(), time);
-			if(time >= 2) {
-				player.sendMessage(ChatColor.GRAY + "Отдохни");
-				e.setCancelled(true);
-				return;
-			}
+			player.sendMessage(ChatColor.GRAY + "Отдохни");
 			e.setCancelled(true);
 			return;
 		}
@@ -63,7 +59,7 @@ public class TeleMessageMinecraft implements Listener{
 		}else
 		messages = messages.replace('!', ' ');
 		for(Player chat : Bukkit.getOnlinePlayers()) {
-			chat.sendMessage(ChatColor.GOLD + "[Глобал] !" + ChatColor.WHITE + player.getName() + ":" + messages);
+			chat.sendMessage(ChatColor.GOLD + "[Глобал] " + ChatColor.WHITE + player.getName() + ":" + messages);
 		}
 		//Отправка сообщения в чат дискорд
 		Main main = Main.getPlugin(Main.class);
