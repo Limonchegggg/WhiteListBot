@@ -14,8 +14,14 @@ commands:
       description: Проверка подключения к базе
       permission: bwt.admin
     v:
-      description: ВАаниш
+      description: Вааниш
       permission: bwt.vanish
+    bot:
+      description: Команды бота
+      permission: bwt.bot
+    adm:
+      description: Админская команда
+      permission: bwt.ban
 permissions:
     admin:
         description: метка на админа

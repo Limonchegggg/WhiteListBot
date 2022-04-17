@@ -1,8 +1,10 @@
 package bot.commands;
 
 
-import java.util.HashMap;
+import java.util.List;
+
 import Main.Main;
+import bot.DiscordData;
 import configs.PlayersGetter;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -44,17 +46,17 @@ public class WhiteListJoin extends ListenerAdapter{
 			return;
 		}
 		if(pg.isTicket()) {
-			if(plugin.messages_id.containsKey(e.getAuthor().getId())) {
+			if(DiscordData.get().getStringList("Queue").contains(e.getAuthor().getId())) {
 				e.getChannel().sendMessage("**Вы уже состоите в очереди**").queue();
 				return;		
 			}
 			e.getMessage().addReaction("👍").queue();
 			e.getMessage().addReaction("👎").queue();
-			HashMap<String, String> UserTags = new HashMap<String, String>();
-			UserTags.put("Nick", message[1]);
-			UserTags.put("Disord", e.getAuthor().getName());
-			UserTags.put("DiscordId", e.getAuthor().getId());
-			plugin.messages_id.put(e.getAuthor().getId(), UserTags);
+			List<String> queue = DiscordData.get().getStringList("Queue");
+			queue.add(e.getAuthor().getId());
+			DiscordData.get().set("Queue", queue);
+			DiscordData.save();
+			DiscordData.reload();
 			e.getChannel().sendMessage("Дорогой `" + message[1] + "`! Я добавил тебя в очередь и напишу когда тебя примут!").queue();
 			return;
 		}
@@ -68,10 +70,11 @@ public class WhiteListJoin extends ListenerAdapter{
 		if(!pg.getAdminIdList().contains(e.getUser().getId())) return;
 		try {
 			e.retrieveMessage().queue(message -> {
-				if(!plugin.messages_id.containsKey(message.getAuthor().getId())) return;
-				String Nick = plugin.messages_id.get(message.getAuthor().getId()).get("Nick");
-				String Discord = plugin.messages_id.get(message.getAuthor().getId()).get("Discrod");
-				String DiscordId = plugin.messages_id.get(message.getAuthor().getId()).get("DiscrodId");
+				String[] msg = message.getContentRaw().split(" ");
+				if(!DiscordData.get().getStringList("Queue").contains(message.getAuthor().getId())) return;
+				String Nick = msg[1];
+				String Discord = message.getAuthor().getName();
+				String DiscordId = message.getAuthor().getId();
 				switch(e.getReactionEmote().getName()) {
 				//Палец вверх
 				case "👍":
@@ -79,17 +82,24 @@ public class WhiteListJoin extends ListenerAdapter{
 						channel.sendMessage("Дорогой `" + Nick + "`! Теперь ты можешь играть на сервере! 😎").queue();
 					});
 					message.addReaction("😎");
+					List<String> queue = DiscordData.get().getStringList("Queue");
+					queue.remove(DiscordId);
+					DiscordData.get().set("Queue", queue);
+					DiscordData.save();
+					DiscordData.reload();
 					plugin.data.cratePlayer(Nick, Discord, DiscordId);
-					plugin.messages_id.remove(message.getAuthor().getId());
 					return;
 				//Палец вниз
 				case "👎":
-					plugin.messages_id.remove(e.getMember().getId());
+					List<String> queue1 = DiscordData.get().getStringList("Queue");
+					queue1.remove(DiscordId);
+					DiscordData.get().set("Queue", queue1);
+					DiscordData.save();
+					DiscordData.reload();
 					message.getAuthor().openPrivateChannel().queue((channel) -> {
 						channel.sendMessage("Дорогой `" + Nick + "`! Мне жаль, тебе отказали, но не расстраивайся и попробуй еще раз! 😿").queue();
 					});
 					message.addReaction("😿");
-					plugin.messages_id.remove(message.getAuthor().getId());
 					return;
 				default:
 					log("Нетот смайлик");

@@ -1,6 +1,7 @@
 package WhiteListCommands;
 
 
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +21,10 @@ public class WhiteListRemove implements CommandExecutor{
 			sender.sendMessage(ChatColor.GRAY + "Использование: /removewl <Ник>");
 			return false;
 			}
-		
+		if(!plugin.data.existsPlayer(args[0])){
+			sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в базе");
+			return false;
+		}
 		plugin.data.removePlayer(args[0]);
 		if(Bukkit.getPlayer(args[0]) != null) {
 		Bukkit.getPlayer(args[0]).kickPlayer("Вас выгнали из вайтлиста");

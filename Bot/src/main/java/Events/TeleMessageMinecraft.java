@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import Main.Main;
 import configs.PlayersGetter;
+import console.Logging;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
@@ -22,6 +23,7 @@ public class TeleMessageMinecraft implements Listener{
 	private HashMap<String, String> message = new HashMap<String,String>();
 	private HashMap<String, Integer> times = new HashMap<String, Integer>();
 	private Main plugin = Main.getPlugin(Main.class);
+	private Logging log = new Logging();
 	@EventHandler
 		public void getChat(AsyncPlayerChatEvent e) {
 		Player player = e.getPlayer();
@@ -52,6 +54,7 @@ public class TeleMessageMinecraft implements Listener{
 						}
 					}
 					player.sendMessage(ChatColor.GREEN + "[Локал] " + ChatColor.WHITE + player.getName() + ": " + e.getMessage());
+					log.Log("[Локал] " +  ": " + e.getMessage());
 					cancel();
 				}
 			}.runTask(plugin);
@@ -61,6 +64,7 @@ public class TeleMessageMinecraft implements Listener{
 		for(Player chat : Bukkit.getOnlinePlayers()) {
 			chat.sendMessage(ChatColor.GOLD + "[Глобал] " + ChatColor.WHITE + player.getName() + ":" + messages);
 		}
+		log.Log("[Глобал] " +player.getName() + ":" + messages);
 		//Отправка сообщения в чат дискорд
 		Main main = Main.getPlugin(Main.class);
 		PlayersGetter pg = new PlayersGetter();

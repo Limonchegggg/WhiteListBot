@@ -46,10 +46,9 @@ public class SQLGetter {
 	public void removePlayer(String playerName) {
 		try {
 			if(existsPlayer(playerName)) {
-					Statement stm = plugin.sql.getConnection().createStatement();
-					ResultSet rs = stm.executeQuery("DELETE FROM whitelist WHERE NAME='" + playerName + "'");
-					rs.close();
-					stm.close();
+					PreparedStatement ps = plugin.sql.getConnection().prepareStatement("DELETE FROM whitelist WHERE NAME='"+playerName+"'");
+					ps.executeUpdate();
+					ps.close();
 				return;
 			}
 		}catch(SQLException e) {
@@ -87,16 +86,6 @@ public boolean existsPlayer(String playerName) {
 			e.printStackTrace();
 		}
 		return false;
-	}
-	public void removeDiscordId(String discordId) {
-		try {
-		Statement stm = plugin.sql.getConnection().createStatement();
-		ResultSet rs = stm.executeQuery("DELETE FROM whitelist WHERE DISCORDID= '"+discordId+"'");
-		rs.close();
-		stm.close();
-		}catch(SQLException e) {
-			System.out.println(e);
-		}
 	}
 	
 	public String getIdFromName(String playername) {

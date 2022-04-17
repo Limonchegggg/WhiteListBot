@@ -11,7 +11,6 @@ import configs.Players;
 import configs.PlayersGetter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -128,12 +127,6 @@ public class Commands extends ListenerAdapter{
 	public void sendPrivateMessage(User user, String message) {
 		user.openPrivateChannel().queue((channel) ->{
 			channel.sendMessage(message).queue();
-		});
-		return;
-	}
-	public void sendPrivateEmbet(User user, MessageEmbed embet) {
-		user.openPrivateChannel().queue((channel) ->{
-			channel.sendMessage((CharSequence) embet).queue();
 		});
 		return;
 	}

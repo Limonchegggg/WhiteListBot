@@ -34,6 +34,10 @@ public class JoinEvent implements Listener{
 					player.kickPlayer(msg);
 					return;
 			}
+			if(plugin.ban_list.containsKey(e.getPlayer().getName())) {
+				player.kickPlayer("Вы временно заблокированы");
+				return;
+			}
 			plugin.jda.getJDA().getPresence().setActivity(Activity.watching(Bukkit.getOnlinePlayers().size() + "/" + Bukkit.getMaxPlayers() + " игроков"));
 			MessageChannel msgchannel = plugin.jda.getJDA().getTextChannelById(pg.getTeleMessageChannelId());
 			msgchannel.sendMessage("**" + player.getName() + " зашел на сервер**").queue();

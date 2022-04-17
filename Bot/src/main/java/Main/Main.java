@@ -8,6 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import Admin.AdminCommands;
+import Admin.BanData;
+import Admin.Timer;
 import Database.MySql;
 import Database.SQLGetter;
 import Database.SqlConnection;
@@ -15,6 +18,7 @@ import Events.JoinEvent;
 import Events.TeleMessageMinecraft;
 import WhiteListCommands.WhiteListAdd;
 import WhiteListCommands.WhiteListRemove;
+import WhiteListCommands.connectBot;
 import WhiteListCommands.vanish;
 import bot.DiscordData;
 import bot.WhiteListBot;
@@ -24,15 +28,12 @@ public class Main extends JavaPlugin{
 	public MySql sql;
 	public SQLGetter data;
 	public WhiteListBot jda;
+	//Игроки, которые застряли
 	public HashMap<String, Player> stack_players = new HashMap<String, Player>();
+	//Игроки в ванише
 	public ArrayList<String> vanish = new ArrayList<String>();
-	/*
-	 * Юзер:
-	 *  Ник: test
-	 *  Имя юзера:test
-	 *  Юзер Ид:02311005
-	 */
-	public HashMap<String, HashMap<String, String>> messages_id = new HashMap<String, HashMap<String,String>>();
+	//Игрок - время
+	public HashMap<String, Integer> ban_list = new HashMap<String, Integer>();
 	@Override
 	public void onEnable() {
 		
@@ -57,8 +58,12 @@ public class Main extends JavaPlugin{
 		
 		DiscordData.setup();
 		DiscordData.get().addDefault("Queue", null);
-		DiscordData.get().addDefault("Id", null);
+		DiscordData.get().addDefault("BlackWords", null);
 		DiscordData.save();
+		
+		BanData.setup();
+		BanData.get().addDefault("Bans", null);
+		BanData.save();
 		
 		this.jda = new WhiteListBot();
 		this.sql = new MySql();
@@ -69,6 +74,8 @@ public class Main extends JavaPlugin{
 		getServer().getPluginCommand("wladd").setExecutor(new WhiteListAdd());
 		getServer().getPluginCommand("removewl").setExecutor(new WhiteListRemove());
 		getServer().getPluginCommand("v").setExecutor(new vanish());
+		getServer().getPluginCommand("bot").setExecutor(new connectBot());
+		getServer().getPluginCommand("adm").setExecutor(new AdminCommands());
 		
 		getServer().getPluginManager().registerEvents(new JoinEvent(), this);
 		getServer().getPluginManager().registerEvents(new TeleMessageMinecraft(), this);
@@ -88,22 +95,22 @@ public class Main extends JavaPlugin{
 			Bukkit.getLogger().info("Database is connected");
 			data.createTable();
 		}
-	}
+		new BanData().loadBans();
+		new Timer();
+		}
 		@Override
 		public void onDisable() {
+			new BanData().saveBans();
 			sql.disconnect();
 			jda.stopBot();
 		}
 		
 		@Override
 		public void reloadConfig() {
+			new BanData().saveBans();
 			sql.disconnect();
 			jda.stopBot();
 		}
-		
-		
-		
-		
 		public boolean existsSqlHostYml() {
 			return Players.get().getString("host").isEmpty() ? false : true;
 		}
