@@ -2,7 +2,8 @@ package Admin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -46,9 +47,18 @@ public class BanData {
     }
     public void saveBans() {
     	get().set("Bans", main.ban_list);
+    	ArrayList<String> list = new ArrayList<String>();
+    	for(Entry<String, Integer> key : main.ban_list.entrySet()) {
+    		list.add(key.getKey());
+    	}
+    	get().set("Names", list);
+    	save();
+    	reload();
+    	return;
     }
-    @SuppressWarnings("unchecked")
 	public void loadBans() {
-    	main.ban_list = (HashMap<String, Integer>) get().getMapList("Bans");
+    	for(int i=0; i<=get().getStringList("Names").size(); i++) {
+    		main.ban_list.put(get().getString("Names"), get().getConfigurationSection("Bans").getInt(get().getString("Names")));
+    	}
     }
 }

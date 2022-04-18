@@ -7,22 +7,27 @@ import Main.Main;
 
 public class Timer {
 	private Main main = Main.getPlugin(Main.class);
+	private int i = 0;
+	private BanData bd = new BanData();
 	public void createTimer() {
 		new BukkitRunnable() {
-			@SuppressWarnings("unlikely-arg-type")
 			@Override
 			public void run() {
-				if(main.ban_list.isEmpty()) return;
-				for(Entry<String, Integer> key : main.ban_list.entrySet()) {
-					main.ban_list.replace(key.getKey(), main.ban_list.get(key)-1);
-					if(main.ban_list.get(key) == 0) {
-						main.ban_list.remove(key);
-						main.jda.getJDA().getUserById(main.data.getIdFromName(key.getKey())).openPrivateChannel().queue(channel ->{
-							channel.sendMessage("Поздравляю тебя разбанили! Теперь ты можешь играть на сервере!");
-						});
+				i++;
+					for(Entry<String, Integer> key : main.ban_list.entrySet()) {
+						main.ban_list.replace(key.getKey(), key.getValue()-1);
+						if(key.getValue() == 0) {
+							main.ban_list.remove(key.getKey());
+							main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(main.getName())).queue((channel) ->{
+								channel.sendMessage("Поздравляю тебя разбанили! Теперь ты можешь играть на сервере!");
+							});
+						}
 					}
+				if(i==60) {
+					bd.saveBans();
+					i=0;
 				}
 			}
-		}.runTaskTimer(main, 1000, 1000);
+		}.runTaskTimer(main, 20L, 20L);
 	}
 }

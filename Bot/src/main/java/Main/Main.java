@@ -95,7 +95,9 @@ public class Main extends JavaPlugin{
 			Bukkit.getLogger().info("Database is connected");
 			data.createTable();
 		}
+		if(!BanData.get().getStringList("Names").isEmpty()) {
 		new BanData().loadBans();
+		}
 		new Timer();
 		}
 		@Override

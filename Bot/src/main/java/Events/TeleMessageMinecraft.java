@@ -54,7 +54,7 @@ public class TeleMessageMinecraft implements Listener{
 						}
 					}
 					player.sendMessage(ChatColor.GREEN + "[Локал] " + ChatColor.WHITE + player.getName() + ": " + e.getMessage());
-					log.Log("[Локал] " +  ": " + e.getMessage());
+					log.Log("[Локал] " + player.getName() + ": " + e.getMessage());
 					cancel();
 				}
 			}.runTask(plugin);
@@ -64,7 +64,7 @@ public class TeleMessageMinecraft implements Listener{
 		for(Player chat : Bukkit.getOnlinePlayers()) {
 			chat.sendMessage(ChatColor.GOLD + "[Глобал] " + ChatColor.WHITE + player.getName() + ":" + messages);
 		}
-		log.Log("[Глобал] " +player.getName() + ":" + messages);
+		log.Log("[Глобал] " + player.getName() + ":" + messages);
 		//Отправка сообщения в чат дискорд
 		Main main = Main.getPlugin(Main.class);
 		PlayersGetter pg = new PlayersGetter();
