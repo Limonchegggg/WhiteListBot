@@ -22,6 +22,9 @@ commands:
     adm:
       description: Админская команда
       permission: bwt.ban
+    reloadConfig:
+      description: Перезагружает конфиги
+      pernission: bwt.configs
 permissions:
     admin:
         description: метка на админа

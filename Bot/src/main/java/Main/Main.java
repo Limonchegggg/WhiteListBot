@@ -22,6 +22,7 @@ import WhiteListCommands.connectBot;
 import WhiteListCommands.vanish;
 import bot.DiscordData;
 import bot.WhiteListBot;
+import configs.ConfigCommand;
 import configs.Players;
 
 public class Main extends JavaPlugin{
@@ -76,6 +77,7 @@ public class Main extends JavaPlugin{
 		getServer().getPluginCommand("v").setExecutor(new vanish());
 		getServer().getPluginCommand("bot").setExecutor(new connectBot());
 		getServer().getPluginCommand("adm").setExecutor(new AdminCommands());
+		getServer().getPluginCommand("reloadConfig").setExecutor(new ConfigCommand());
 		
 		getServer().getPluginManager().registerEvents(new JoinEvent(), this);
 		getServer().getPluginManager().registerEvents(new TeleMessageMinecraft(), this);
