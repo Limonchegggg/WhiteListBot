@@ -33,7 +33,6 @@ public class BanData {
     public static FileConfiguration get(){
         return customFile;
     }
-
     public static void save(){
         try{
             customFile.save(file);
@@ -41,7 +40,6 @@ public class BanData {
             System.out.println("Файл не смог сохраниться!");
         }
     }
-
     public static void reload(){
         customFile = YamlConfiguration.loadConfiguration(file);
     }
@@ -57,8 +55,23 @@ public class BanData {
     	return;
     }
 	public void loadBans() {
-    	for(int i=0; i<=get().getStringList("Names").size(); i++) {
-    		main.ban_list.put(get().getString("Names"), get().getConfigurationSection("Bans").getInt(get().getString("Names")));
-    	}
+		for(int i=0; i<get().getStringList("Names").size(); i++) {
+			main.ban_list.put(get().getStringList("Names").get(i), get().getConfigurationSection("Bans").getInt(get().getStringList("Names").get(i)));
+		}
     }
+	public void saveMute() {
+		get().set("Mute", main.mute_list);
+		ArrayList<String> list = new ArrayList<String>();
+		for(Entry<String, Integer> key : main.mute_list.entrySet()) {
+			list.add(key.getKey());
+		}
+		get().set("MuteList", list);
+		save();
+		reload();
+	}
+	public void loadMute() {
+		for(int i=0; i<get().getStringList("MuteList").size(); i++) {
+			main.mute_list.put(get().getStringList("MuteList").get(i), get().getConfigurationSection("Mute").getInt(get().getStringList("MuteList").get(i)));
+		}
+	}
 }

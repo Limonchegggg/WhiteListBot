@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.yaml.snakeyaml.error.YAMLException;
 
+import Admin.BanData;
 import bot.DiscordData;
 import console.Logging;
 import net.md_5.bungee.api.ChatColor;
@@ -19,6 +20,8 @@ public class ConfigCommand implements CommandExecutor {
 		try {
 		DiscordData.save();
 		DiscordData.reload();
+		BanData.save();
+		BanData.reload();
 		Players.save();
 		Players.reload();
 		sender.sendMessage(ChatColor.GRAY + "Конфиги перезагружены");
@@ -28,5 +31,4 @@ public class ConfigCommand implements CommandExecutor {
 		}
 		return false;
 	}
-
 }

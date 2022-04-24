@@ -35,6 +35,7 @@ public class Main extends JavaPlugin{
 	public ArrayList<String> vanish = new ArrayList<String>();
 	//Игрок - время
 	public HashMap<String, Integer> ban_list = new HashMap<String, Integer>();
+	public HashMap<String, Integer> mute_list = new HashMap<String, Integer>();
 	@Override
 	public void onEnable() {
 		
@@ -64,6 +65,7 @@ public class Main extends JavaPlugin{
 		
 		BanData.setup();
 		BanData.get().addDefault("Bans", null);
+		BanData.get().addDefault("Mute", null);
 		BanData.save();
 		
 		this.jda = new WhiteListBot();
@@ -73,7 +75,7 @@ public class Main extends JavaPlugin{
 		
 		getServer().getPluginCommand("connection").setExecutor(new SqlConnection());
 		getServer().getPluginCommand("wladd").setExecutor(new WhiteListAdd());
-		getServer().getPluginCommand("removewl").setExecutor(new WhiteListRemove());
+		getServer().getPluginCommand("wlremove").setExecutor(new WhiteListRemove());
 		getServer().getPluginCommand("v").setExecutor(new vanish());
 		getServer().getPluginCommand("bot").setExecutor(new connectBot());
 		getServer().getPluginCommand("adm").setExecutor(new AdminCommands());
@@ -97,8 +99,12 @@ public class Main extends JavaPlugin{
 			Bukkit.getLogger().info("Database is connected");
 			data.createTable();
 		}
+		try {
 		if(!BanData.get().getStringList("Names").isEmpty()) {
 		new BanData().loadBans();
+		}
+		}catch(Exception e) {
+			System.out.println("Ошибка загрузки банов");
 		}
 		new Timer();
 		}

@@ -1,9 +1,12 @@
 package Admin;
 
 import java.util.Map.Entry;
+
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import Main.Main;
+import net.md_5.bungee.api.ChatColor;
 
 public class Timer {
 	private Main main = Main.getPlugin(Main.class);
@@ -16,15 +19,23 @@ public class Timer {
 				i++;
 					for(Entry<String, Integer> key : main.ban_list.entrySet()) {
 						main.ban_list.replace(key.getKey(), key.getValue()-1);
-						if(key.getValue() == 0) {
+						if(key.getValue() <= 0) {
 							main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(key.getKey())).queue((channel) ->{
 								channel.sendMessage("Поздравляю тебя разбанили! Теперь ты можешь играть на сервере!").queue();
 							});
 							main.ban_list.remove(key.getKey());
 						}
 					}
+					for(Entry<String, Integer> key : main.mute_list.entrySet()) {
+						main.mute_list.replace(key.getKey(), key.getValue()-1);
+						if(key.getValue() <= 0) {
+							Bukkit.getPlayer(key.getKey()).sendMessage(ChatColor.GREEN + "Вы были размучены");
+							main.mute_list.remove(key.getKey());
+						}
+					}
 				if(i==30) {
 					bd.saveBans();
+					bd.saveMute();
 					i=0;
 				}
 			}

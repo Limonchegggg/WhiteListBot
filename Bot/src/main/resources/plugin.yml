@@ -7,7 +7,7 @@ commands:
     wladd:
       description: Добавление игроков в вл
       permission: bwt.admin
-    removewl:
+    wlremove:
       description: Удаление игроков из вл
       permission: bwt.admin
     connection:
