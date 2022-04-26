@@ -10,6 +10,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import Main.Main;
 import methods.Text;
@@ -27,9 +28,10 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 			return false;
 		}
 		if(args.length == 0) {
-			sender.sendMessage(ChatColor.GRAY + "/adm [ban/pardon]");
+			sender.sendMessage(ChatColor.GRAY + "/adm [ban/pardon/mute/unmute/endchest]");
 			return false;
 		}
+		Player player = (Player) sender;
 		Text text = new Text();
 		switch(args[0]) {
 		case "ban":
@@ -173,11 +175,25 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				return false;
 			}
 			if(!main.data.existsPlayer(args[1])) {
-				sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлсте");
+				sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
 				return false;
 			}
 			main.mute_list.remove(args[1]);
+			sender.sendMessage("Игрок размучен");
 			Bukkit.getPlayer(args[1]).sendMessage(ChatColor.GREEN + "Вы были размучены");
+			return false;
+		case "endchest":
+			if(args.length < 2) {
+				sender.sendMessage(ChatColor.GRAY + "/adm endchest [Ник]");
+				return false;
+			}
+			try {
+			Inventory inv = Bukkit.getPlayer(args[1]).getEnderChest();
+			player.openInventory(inv);
+			sender.sendMessage(ChatColor.GRAY + "Вы открыли эндер сундук игрока " +args[1]);
+			}catch(Exception e) {
+				sender.sendMessage(ChatColor.GRAY + "Ошибка открытия Эндер Сундука у " + args[1]);
+			}
 			return false;
 		default:
 			sender.sendMessage(ChatColor.GRAY + "/adm [ban/pardon/mute/unmute]");
@@ -186,7 +202,7 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute");
+		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute","endchest");
 		List<String> time = Arrays.asList("1","2","3","4","5","6","7","8","9");
 		List<String> type = Arrays.asList("h","m","s");
 		
@@ -200,7 +216,8 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 			}
 			return result;
 		case 2:
-			if(args[0].equals("pardon")) {
+			switch(args[0]) {
+			case "pardon":
 				if(!BanData.get().getStringList("Names").isEmpty()) {
 					for(String s : BanData.get().getStringList("Names")) {
 						if(args[1].toLowerCase().startsWith(args[1].toLowerCase()))
@@ -208,7 +225,7 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 					}
 				}
 				return result;
-			}else if(args[0].equals("unmute")) {
+			case "unmute":
 				if(!BanData.get().getStringList("MuteList").isEmpty()) {
 					for(String s : BanData.get().getStringList("MuteList")) {
 						if(args[1].toLowerCase().startsWith(args[1].toLowerCase()))
@@ -216,12 +233,20 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 					}
 				}
 				return result;
+			case "endchest":
+					for(Player p : Bukkit.getOnlinePlayers()) {
+						if(args[1].toLowerCase().startsWith(args[1].toLowerCase()))
+							result.add(p.getName());
+					}
+				return result;
+			default:
+				for(Player player : Bukkit.getOnlinePlayers()) {
+					if(player.getName().toLowerCase().startsWith(args[1].toLowerCase()))
+						result.add(player.getName());
+				}
+				return result;
 			}
-			for(Player player : Bukkit.getOnlinePlayers()) {
-				if(player.getName().toLowerCase().startsWith(args[1].toLowerCase()))
-					result.add(player.getName());
-			}
-			return result;
+			
 		case 3:
 			for(String s : time) {
 				if(s.toLowerCase().startsWith(args[2].toLowerCase()))

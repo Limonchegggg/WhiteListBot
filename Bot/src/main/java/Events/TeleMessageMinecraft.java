@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import Main.Main;
+import bot.DiscordData;
 import configs.PlayersGetter;
 import console.Logging;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -36,6 +37,15 @@ public class TeleMessageMinecraft implements Listener{
 			player.sendMessage(ChatColor.GRAY + "У вас мут, вы не можете писать!");
 			e.setCancelled(true);
 			return;
+		}
+		
+		String[] args = messages.split(" ");
+		for(int i=0; i<args.length;i++) {
+			if(DiscordData.get().getStringList("BlackWords").contains(args[i])) {
+				player.sendMessage(ChatColor.GRAY + "В сообщении есть запрещенное слово!");
+				e.setCancelled(true);
+				return;
+			}
 		}
 		
 		//Проверка на спам
