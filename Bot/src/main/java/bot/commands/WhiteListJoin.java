@@ -88,6 +88,7 @@ public class WhiteListJoin extends ListenerAdapter{
 					DiscordData.save();
 					DiscordData.reload();
 					plugin.data.cratePlayer(Nick, Discord, DiscordId);
+					plugin.newguy_list.put(Nick, 600);
 					return;
 				//Палец вниз
 				case "👎":

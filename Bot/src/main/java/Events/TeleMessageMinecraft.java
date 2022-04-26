@@ -31,6 +31,13 @@ public class TeleMessageMinecraft implements Listener{
 		if(messages.contains("@")) {
 			messages = messages.replace('@', '\0');
 		}
+		//Мут
+		if(plugin.mute_list.containsKey(player.getName())) {
+			player.sendMessage(ChatColor.GRAY + "У вас мут, вы не можете писать!");
+			e.setCancelled(true);
+			return;
+		}
+		
 		//Проверка на спам
 		if(message.get(player.getName()).contains(messages)) {
 			int time = times.get(player.getName())+1;

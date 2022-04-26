@@ -36,6 +36,8 @@ public class Main extends JavaPlugin{
 	//Игрок - время
 	public HashMap<String, Integer> ban_list = new HashMap<String, Integer>();
 	public HashMap<String, Integer> mute_list = new HashMap<String, Integer>();
+	
+	public HashMap<String, Integer> newguy_list = new HashMap<String, Integer>();
 	@Override
 	public void onEnable() {
 		
@@ -79,6 +81,7 @@ public class Main extends JavaPlugin{
 		getServer().getPluginCommand("v").setExecutor(new vanish());
 		getServer().getPluginCommand("bot").setExecutor(new connectBot());
 		getServer().getPluginCommand("adm").setExecutor(new AdminCommands());
+		getServer().getPluginCommand("adm").setTabCompleter(new AdminCommands());
 		getServer().getPluginCommand("reloadConfig").setExecutor(new ConfigCommand());
 		
 		getServer().getPluginManager().registerEvents(new JoinEvent(), this);
@@ -106,11 +109,19 @@ public class Main extends JavaPlugin{
 		}catch(Exception e) {
 			System.out.println("Ошибка загрузки банов");
 		}
+		try {
+			if(!BanData.get().getStringList("NamesMute").isEmpty()) {
+			new BanData().loadBans();
+		}
+		}catch(Exception e) {
+			System.out.println("Ошибка загрузки мутов");
+		}
 		new Timer();
 		}
 		@Override
 		public void onDisable() {
 			new BanData().saveBans();
+			new BanData().saveMute();
 			sql.disconnect();
 			jda.stopBot();
 		}

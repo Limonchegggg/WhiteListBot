@@ -1,15 +1,24 @@
 package Admin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
 import Main.Main;
 import methods.Text;
 import net.md_5.bungee.api.ChatColor;
 
-public class AdminCommands implements CommandExecutor{
+
+
+public class AdminCommands implements CommandExecutor, TabCompleter{
+
 	private Main main = Main.getPlugin(Main.class);
 	@Override
 	public boolean onCommand(CommandSender sender, Command com, String str, String[] args) {
@@ -37,6 +46,11 @@ public class AdminCommands implements CommandExecutor{
 				return false;
 			}
 			int time = Integer.parseInt(args[2]);
+			if(time<0) {
+				sender.sendMessage(ChatColor.GRAY + "Длительность не может быть отрицательной!");
+				return  false;
+			}
+			
 			String reason = String.join(" ", args);
 			reason = reason.replace(args[0], "");
 			reason = reason.replace(args[1] + " ", "");
@@ -122,6 +136,10 @@ public class AdminCommands implements CommandExecutor{
 				return false;
 			}
 			int timeMute = Integer.parseInt(args[2]);
+			if(timeMute<0) {
+				sender.sendMessage(ChatColor.GRAY + "Длительность не может быть отрицательной!");
+				return  false;
+			}
 			String reasonMute = String.join(" ", args);
 			reasonMute = reasonMute.replace(args[0], "");
 			reasonMute = reasonMute.replace(args[1] + " ", "");
@@ -145,9 +163,79 @@ public class AdminCommands implements CommandExecutor{
 				sender.sendMessage(ChatColor.GRAY + "Доступно только h/m/s");
 				return false;
 			}
+		case "unmute":
+			if(args.length < 3) {
+				sender.sendMessage(ChatColor.GRAY + "/adm unmute <Ник>");
+				return false;
+			}
+			if(!main.mute_list.containsKey(args[1])) {
+				sender.sendMessage(ChatColor.GRAY + "Игрок не в муте");
+				return false;
+			}
+			if(!main.data.existsPlayer(args[1])) {
+				sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлсте");
+				return false;
+			}
+			main.mute_list.remove(args[1]);
+			Bukkit.getPlayer(args[1]).sendMessage(ChatColor.GREEN + "Вы были размучены");
+			return false;
 		default:
 			sender.sendMessage(ChatColor.GRAY + "/adm [ban/pardon/mute/unmute]");
 			return false;
+		}
+	}
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute");
+		List<String> time = Arrays.asList("1","2","3","4","5","6","7","8","9");
+		List<String> type = Arrays.asList("h","m","s");
+		
+		List<String> result = new ArrayList<String>();
+		
+		switch(args.length) {
+		case 1:
+			for(String a : arguments) {
+				if(a.toLowerCase().startsWith(args[0].toLowerCase())) 
+					result.add(a);
+			}
+			return result;
+		case 2:
+			if(args[0].equals("pardon")) {
+				if(!BanData.get().getStringList("Names").isEmpty()) {
+					for(String s : BanData.get().getStringList("Names")) {
+						if(args[1].toLowerCase().startsWith(args[1].toLowerCase()))
+							result.add(s);
+					}
+				}
+				return result;
+			}else if(args[0].equals("unmute")) {
+				if(!BanData.get().getStringList("MuteList").isEmpty()) {
+					for(String s : BanData.get().getStringList("MuteList")) {
+						if(args[1].toLowerCase().startsWith(args[1].toLowerCase()))
+							result.add(s);
+					}
+				}
+				return result;
+			}
+			for(Player player : Bukkit.getOnlinePlayers()) {
+				if(player.getName().toLowerCase().startsWith(args[1].toLowerCase()))
+					result.add(player.getName());
+			}
+			return result;
+		case 3:
+			for(String s : time) {
+				if(s.toLowerCase().startsWith(args[2].toLowerCase()))
+					result.add(s);
+			}
+			return result;
+		case 4:
+			for(String s : type) {
+				if(s.toLowerCase().startsWith(args[3].toLowerCase()))
+					result.add(s);
+			}
+			return result;
+		default:
+			return null;
 		}
 	}
 }
