@@ -18,13 +18,23 @@ public class ConfigCommand implements CommandExecutor {
 			return false;
 		}
 		try {
-		DiscordData.save();
-		DiscordData.reload();
-		BanData.save();
-		BanData.reload();
-		Players.save();
-		Players.reload();
-		sender.sendMessage(ChatColor.GRAY + "Конфиги перезагружены");
+			switch(args[0]) {
+			case "DiscrodData":
+				DiscordData.save();
+				sender.sendMessage(ChatColor.GRAY + "Конфиг перезагружен");
+				return false;
+			case "BanData":
+				BanData.save();
+				sender.sendMessage(ChatColor.GRAY + "Конфиг перезагружен");
+				return false;
+			case "BotConfig":
+				Players.save();
+				sender.sendMessage(ChatColor.GRAY + "Конфиг перезагружен");
+				return false;
+			default:
+				sender.sendMessage(ChatColor.GRAY + "[DiscrodData/BanData/BotConfig]");
+				return false;
+			}
 		}catch(YAMLException e) {
 			sender.sendMessage(ChatColor.RED + "Ошибка перезагрузки конфигов");
 			new Logging().Log(e.getLocalizedMessage());

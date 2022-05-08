@@ -21,6 +21,11 @@ import net.md_5.bungee.api.ChatColor;
 public class AdminCommands implements CommandExecutor, TabCompleter{
 
 	private Main main = Main.getPlugin(Main.class);
+	private String reason;
+	private String user;
+	private int lenght;
+	private String admin;
+	private String time1;
 	@Override
 	public boolean onCommand(CommandSender sender, Command com, String str, String[] args) {
 		if(!sender.hasPermission("bwt.ban")) {
@@ -52,15 +57,18 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				sender.sendMessage(ChatColor.GRAY + "Длительность не может быть отрицательной!");
 				return  false;
 			}
-			
-			String reason = String.join(" ", args);
+			admin = player.getName();
+			user = args[1];
+			lenght = time;
+			time1 = args[3];
+			reason = String.join(" ", args);
 			reason = reason.replace(args[0], "");
 			reason = reason.replace(args[1] + " ", "");
 			reason = reason.replace(args[2] + " ", "");
 			reason = reason.replace(args[3] + " ", "");
 			String discordReason = reason;
 			switch(args[3]){
-			case "h":
+			case "ч":
 				text.sendPublicMessage(ChatColor.GREEN + "Игрок " + ChatColor.YELLOW + args[1] + ChatColor.GREEN + " был забанен на " + ChatColor.YELLOW + time + ChatColor.GREEN + " часов по причине " + ChatColor.YELLOW + reason);
 				main.ban_list.put(args[1], time*3600);
 				if(Bukkit.getPlayer(args[1]) != null) {
@@ -74,7 +82,7 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 					
 				}
 				return false;
-			case "m":
+			case "м":
 				text.sendPublicMessage(ChatColor.GREEN + "Игрок " + ChatColor.YELLOW + args[1] + ChatColor.GREEN + " был забанен на " + ChatColor.YELLOW + time + ChatColor.GREEN + " минут по причине " + ChatColor.YELLOW + reason);
 				main.ban_list.put(args[1], time*60);
 				if(Bukkit.getPlayer(args[1]) != null) {
@@ -88,7 +96,7 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 					
 				}
 				return false;
-			case "s":
+			case "с":
 				text.sendPublicMessage(ChatColor.GREEN + "Игрок " + ChatColor.YELLOW + args[1] + ChatColor.GREEN + " был забанен на " + ChatColor.YELLOW + time + ChatColor.GREEN + " секунд по причине " + ChatColor.YELLOW + reason);
 				main.ban_list.put(args[1], time);
 				if(Bukkit.getPlayer(args[1]) != null) {
@@ -142,24 +150,26 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				sender.sendMessage(ChatColor.GRAY + "Длительность не может быть отрицательной!");
 				return  false;
 			}
-			String reasonMute = String.join(" ", args);
-			reasonMute = reasonMute.replace(args[0], "");
-			reasonMute = reasonMute.replace(args[1] + " ", "");
-			reasonMute = reasonMute.replace(args[2] + " ", "");
-			reasonMute = reasonMute.replace(args[3] + " ", "");
+			user = args[1];
+			lenght = Integer.parseInt(args[2]);
+			reason = String.join(" ", args);
+			reason = reason.replace(args[0], "");
+			reason = reason.replace(args[1] + " ", "");
+			reason = reason.replace(args[2] + " ", "");
+			reason = reason.replace(args[3] + " ", "");
+			
 			switch(args[3]) {
-			case "h":
+			case "ч":
 				main.mute_list.put(args[1], timeMute*3600);
-				text.sendPublicMessage(reasonMute);
-				text.sendPublicMessage(ChatColor.GREEN + "Игрок " + ChatColor.YELLOW + args[1] + ChatColor.GREEN + " был замучен на " + ChatColor.YELLOW + timeMute + ChatColor.GREEN + " часов по причине " + ChatColor.YELLOW + reasonMute);
+				text.sendPublicMessage(ChatColor.GREEN + "Игрок " + ChatColor.YELLOW + args[1] + ChatColor.GREEN + " был замучен на " + ChatColor.YELLOW + timeMute + ChatColor.GREEN + " часов по причине " + ChatColor.YELLOW + reason);
 				return false;
-			case "m":
+			case "м":
 				main.mute_list.put(args[1], timeMute*60);
-				text.sendPublicMessage(ChatColor.GREEN + "Игрок " + ChatColor.YELLOW + args[1] + ChatColor.GREEN + " был замучен на " + ChatColor.YELLOW + timeMute + ChatColor.GREEN + " минут по причине " + ChatColor.YELLOW + reasonMute);
+				text.sendPublicMessage(ChatColor.GREEN + "Игрок " + ChatColor.YELLOW + args[1] + ChatColor.GREEN + " был замучен на " + ChatColor.YELLOW + timeMute + ChatColor.GREEN + " минут по причине " + ChatColor.YELLOW + reason);
 				return false;
-			case "s":
+			case "с":
 				main.mute_list.put(args[1], timeMute);
-				text.sendPublicMessage(ChatColor.GREEN + "Игрок " + ChatColor.YELLOW + args[1] + ChatColor.GREEN + " был замучен на " + ChatColor.YELLOW + timeMute + ChatColor.GREEN + " секунд по причине " + ChatColor.YELLOW + reasonMute);
+				text.sendPublicMessage(ChatColor.GREEN + "Игрок " + ChatColor.YELLOW + args[1] + ChatColor.GREEN + " был замучен на " + ChatColor.YELLOW + timeMute + ChatColor.GREEN + " секунд по причине " + ChatColor.YELLOW + reason);
 				return false;
 			default:
 				sender.sendMessage(ChatColor.GRAY + "Доступно только h/m/s");
@@ -190,9 +200,18 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 			try {
 			Inventory inv = Bukkit.getPlayer(args[1]).getEnderChest();
 			player.openInventory(inv);
-			sender.sendMessage(ChatColor.GRAY + "Вы открыли эндер сундук игрока " +args[1]);
+			sender.sendMessage(ChatColor.GRAY + "Вы открыли Эндер Сундук игрока " +args[1]);
 			}catch(Exception e) {
 				sender.sendMessage(ChatColor.GRAY + "Ошибка открытия Эндер Сундука у " + args[1]);
+			}
+			return false;
+		case "inventory":
+			try {
+			Inventory in = Bukkit.getPlayer(args[1]).getInventory();
+			player.openInventory(in);
+			sender.sendMessage(ChatColor.GRAY + "Вы открыли Инвентарь игрока " + args[1]);
+			}catch(Exception e) {
+				sender.sendMessage(ChatColor.GRAY + "Ошибка открытия Инвентаря у " + args[1]);
 			}
 			return false;
 		default:
@@ -200,11 +219,28 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 			return false;
 		}
 	}
+	
+	public String getReason() {
+		return reason;
+	}
+	public String getPlayer() {
+		return user;
+	}
+	public String getAdmin() {
+		return admin;
+	}
+	public String getLenght() {
+		String n = ""+lenght;
+		return n;
+	}
+	public String getTime() {
+		return time1;
+	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute","endchest");
+		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute","endchest","inventory","testPlaceHolder");
 		List<String> time = Arrays.asList("1","2","3","4","5","6","7","8","9");
-		List<String> type = Arrays.asList("h","m","s");
+		List<String> type = Arrays.asList("ч","м","с");
 		
 		List<String> result = new ArrayList<String>();
 		

@@ -41,7 +41,5 @@ public class LocaleData {
     public static void reload(){
         customFile = YamlConfiguration.loadConfiguration(file);
     }
-    public void LoadLocale() {
-    	get().addDefault("DiscordQueueAdd", "\"Дорогой ! Я добавил тебя в очередь и напишу когда тебя примут!\"");
-    }
+
 }

@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 public class TeleMessageMinecraft implements Listener{
 	private HashMap<String, String> message = new HashMap<String,String>();
 	private HashMap<String, Integer> times = new HashMap<String, Integer>();
+	private String messages;
 	private Main plugin = Main.getPlugin(Main.class);
 	private Logging log = new Logging();
 	@EventHandler
@@ -75,9 +76,12 @@ public class TeleMessageMinecraft implements Listener{
 					cancel();
 				}
 			}.runTask(plugin);
+			this.messages = messages;
 			return;
 		}else
-		messages = messages.replace('!', ' ');
+		symbol[0] = '\0';
+		messages = symbol.toString();
+		this.messages = messages;
 		for(Player chat : Bukkit.getOnlinePlayers()) {
 			chat.sendMessage(ChatColor.GOLD + "[Глобал] " + ChatColor.WHITE + player.getName() + ":" + messages);
 		}
@@ -102,5 +106,9 @@ public class TeleMessageMinecraft implements Listener{
 	public void playerRemove(PlayerQuitEvent e) {
 		message.remove(e.getPlayer().getName());
 		times.remove(e.getPlayer().getName());
+	}
+	
+	public String getMessage() {
+		return messages;
 	}
 }

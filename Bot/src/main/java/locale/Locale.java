@@ -1,148 +1,145 @@
 package locale;
 
-import org.bukkit.entity.Player;
+
+import Admin.AdminCommands;
+import Events.TeleMessageMinecraft;
 
 public class Locale {
 	public String getLocale(LocaleList locale) {
 		switch(locale) {
 		case AdminCommandBanTimeLenghtFail:
-			break;
+			return LocaleData.get().getConfigurationSection("Ban").getString("AdminCommandBanTimeLenghtFail");
+
+		case AdminCommandBanUser:
+			return LocaleData.get().getConfigurationSection("Ban").getString("AdminCommandBanUser");
+		case AdminCommandBanUserDiscordMessage:
+			return LocaleData.get().getConfigurationSection("Ban").getString("AdminCommandBanUserDiscordMessage");
 		case AdminCommandBanUserDoesNotInWhiteList:
-			break;
-		case AdminCommandBanUserHour:
-			break;
-		case AdminCommandBanUserHourDiscord:
-			break;
+			return LocaleData.get().getConfigurationSection("Ban").getString("AdminCommandBanUserDoesNotInWhiteList");
 		case AdminCommandBanUserIsBanned:
-			break;
-		case AdminCommandBanUserMinute:
-			break;
-		case AdminCommandBanUserMinuteDiscord:
-			break;
-		case AdminCommandBanUserSecond:
-			break;
-		case AdminCommandBanUserSecondDiscord:
-			break;
-		case AdminCommandBanUsing:
-			break;
-		case AdminCommandMuteHour:
-			break;
+			return LocaleData.get().getConfigurationSection("Ban").getString("AdminCommandBanUserIsBanned");
 		case AdminCommandMuteLenghtFail:
-			break;
-		case AdminCommandMuteMinute:
-			break;
-		case AdminCommandMuteSecond:
-			break;
+			return LocaleData.get().getConfigurationSection("Mute").getString("AdminCommandMuteLenghtFail");
+		case AdminCommandMuteUser:
+			return LocaleData.get().getConfigurationSection("Mute").getString("AdminCommandMuteUser");
 		case AdminCommandMuteUserIsMuted:
-			break;
-		case AdminCommandMuteUsing:
-			break;
+			return LocaleData.get().getConfigurationSection("Mute").getString("AdminCommandMuteUserIsMuted");
 		case AdminCommandPardonUserIsNoBanned:
-			break;
+			return LocaleData.get().getConfigurationSection("Pardon").getString("AdminCommandPardonUserIsNoBanned");
 		case AdminCommandPardonUserPardon:
-			break;
+			return LocaleData.get().getConfigurationSection("Pardon").getString("AdminCommandPardonUserPardon");
 		case AdminCommandPardonUserPardonDiscord:
-			break;
-		case AdminCommandPardonUsing:
-			break;
-		case AdminCommandUnMuteUsing:
-			break;
+			return LocaleData.get().getConfigurationSection("Pardon").getString("AdminCommandPardonUserPardonDiscord");
 		case AdminCommandUserIsNotMuted:
-			break;
-		case AdminCommandUserUnMuteAdminMessage:
-			break;
-		case AdminCommandUserUnMutePlayerMessage:
-			break;
-		case AdminCommandUsing:
-			break;
-		case BotDiscordReloadConfig:
-			break;
-		case BotReloadConfig:
-			break;
+			return LocaleData.get().getConfigurationSection("unMute").getString("AdminCommandUserIsNotMuted");
+		case AdminCommandUserUnMuteMessage:
+			return LocaleData.get().getConfigurationSection("unMute").getString("AdminCommandUserUnMuteMessage");
 		case BotStartCommand:
-			break;
+			return LocaleData.get().getConfigurationSection("BotStopCommand").getString("BotStartCommand");
 		case BotStopCommand:
-			break;
+			return LocaleData.get().getConfigurationSection("BotStopCommand").getString("BotStopCommand");
 		case BotWrongWordAdd:
-			break;
+			return LocaleData.get().getConfigurationSection("BotStopCommand").getString("BotWrongWordAdd");
 		case BotWrongWordRemove:
-			break;
+			return LocaleData.get().getConfigurationSection("BotStopCommand").getString("BotWrongWordRemove");
 		case ConfigReloaded:
-			break;
+			return LocaleData.get().getConfigurationSection("Config").getString("ConfigReloaded");
 		case ConfigReloadedFail:
-			break;
+			return LocaleData.get().getConfigurationSection("Config").getString("ConfigReloadedFail");
+		case DiscordAutoPardonMessage:
+			return LocaleData.get().getConfigurationSection("AutoPardon").getString("DiscordAutoPardonMessage");
 		case DiscordChatToMinecraft:
-			break;
+			return LocaleData.get().getConfigurationSection("TeleChat").getString("DiscordChatToMinecraft");
 		case DiscordHelp:
-			break;
+			return LocaleData.get().getConfigurationSection("DiscordHelp").getString("DiscordHelp");
 		case DiscordHelpDeny:
-			break;
-		case DiscordHelpMessage:
-			break;
+			return LocaleData.get().getConfigurationSection("DiscordHelp").getString("DiscordHelpDeny");
 		case DiscordHelpPlayerOnServerFail:
-			break;
-		case DiscordPardonMessage:
-			break;
+			return LocaleData.get().getConfigurationSection("DiscordHelp").getString("DiscordHelpPlayerOnServerFail");
 		case DiscordQueueAccept:
-			break;
+			return LocaleData.get().getConfigurationSection("Discord").getString("DiscordQueueAccept");
 		case DiscordQueueAccountDeny:
-			break;
+			return LocaleData.get().getConfigurationSection("Discord").getString("DiscordQueueAccountDeny");
 		case DiscordQueueAdd:
-			break;
+			return LocaleData.get().getConfigurationSection("Discord").getString("DiscordQueueAdd");
 		case DiscordQueueAddQueue:
-			break;
+			return LocaleData.get().getConfigurationSection("Discord").getString("DiscordQueueAddQueue");
 		case DiscordQueueCancel:
-			break;
+			return LocaleData.get().getConfigurationSection("Discord").getString("DiscordQueueCancel");
 		case DiscordQueueCommandUsing:
-			break;
+			return LocaleData.get().getConfigurationSection("Discord").getString("DiscordQueueCommandUsing");
 		case DiscordQueueContain:
-			break;
-		case DiscordQueueDeny:
-			break;
+			return LocaleData.get().getConfigurationSection("Discord").getString("DiscordQueueContain");
 		case DiscordQueueFail:
-			break;
+			return LocaleData.get().getConfigurationSection("Discord").getString("DiscordQueueFail");
 		case DiscordQueueNickNameDeny:
-			break;
+			return LocaleData.get().getConfigurationSection("Discord").getString("DiscordQueueNickNameDeny");
 		case DiscordQueueNickNameLenghtDeny:
-			break;
+			return LocaleData.get().getConfigurationSection("Discord").getString("DiscordQueueNickNameLenghtDeny");
 		case DiscordTellBotDeny:
-			break;
+			return LocaleData.get().getConfigurationSection("privateDiscordMessage").getString("DiscordTellBotDeny");
 		case DiscordTellCommandUsing:
-			break;
+			return LocaleData.get().getConfigurationSection("privateDiscordMessage").getString("DiscordTellCommandUsing");
 		case DiscordTellPlayer:
-			break;
+			return LocaleData.get().getConfigurationSection("privateDiscordMessage").getString("DiscordTellPlayer");
 		case DiscordTellPlayerOnServerFail:
-			break;
+			return LocaleData.get().getConfigurationSection("privateDiscordMessage").getString("DiscordTellPlayerOnServerFail");
 		case MinecraftAntiSpam:
-			break;
+			return LocaleData.get().getConfigurationSection("Chat").getString("MinecraftAntiSpam");
 		case MinecraftChatMute:
-			break;
+			return LocaleData.get().getConfigurationSection("Chat").getString("MinecraftChatMute");
 		case MinecraftGlobalChat:
-			break;
+			return LocaleData.get().getConfigurationSection("Chat").getString("MinecraftGlobalChat");
 		case MinecraftJoinDeny:
-			break;
+			return LocaleData.get().getConfigurationSection("DenyJoin").getString("MinecraftJoinDeny");
 		case MinecraftJoinDenyBan:
-			break;
+			return LocaleData.get().getConfigurationSection("DenyJoin").getString("MinecraftJoinDenyBan");
 		case MinecraftLocalChat:
-			break;
+			return LocaleData.get().getConfigurationSection("Chat").getString("MinecraftLocalChat");
 		case MinecraftQuit:
-			break;
+			return LocaleData.get().getConfigurationSection("DenyJoin").getString("MinecraftQuit");
 		case MinecraftToDiscordChat:
-			break;
+			return LocaleData.get().getConfigurationSection("Chat").getString("MinecraftToDiscordChat");
 		case MinecraftUnMuteMessage:
-			break;
+			return LocaleData.get().getConfigurationSection("AutoPardon").getString("MinecraftUnMuteMessage");
 		case PermissionDeny:
-			break;
+			return LocaleData.get().getString("PermissionDeny");
+		case OpenEnderChest:
+			return LocaleData.get().getConfigurationSection("Inventory").getString("OpenEnderChest");
+		case OpenInventory:
+			return LocaleData.get().getConfigurationSection("Inventory").getString("OpenInventory");
+		case OpenEnderChestFail:
+			return LocaleData.get().getConfigurationSection("Inventory").getString("OpenEnderChestFail");
+		case OpenInventoryFail:
+			return LocaleData.get().getConfigurationSection("Inventory").getString("OpenEnderChestFail");
 		default:
-			break;
+			return null;
 		
 		}
-		return null;
 	}
-	public String setPlaceHolder(String string, Player player) {
-		if(string.contains("&player&")) {
-			String str = string.replace("&player&", player.getName());
+	//%player% %BanWord% %lenght% %time% %reason% %admin% %message%
+	public String setPlaceHolder(String string) {
+		AdminCommands ac = new AdminCommands();
+		String msg = string;
+		if(msg.contains("%player%")) {
+			msg.replace("%player%", ac.getPlayer());
 		}
-		return null;
+		if(msg.contains("%lenght%")) {
+			msg.replace("%lenght%", ac.getLenght());
+		}
+		if(msg.contains("%time%")) {
+			msg.replace("%time%", ac.getTime());
+		}
+		if(msg.contains("%reason%")) {
+			msg.replace("%reason%", ac.getReason());
+		}
+		if(msg.contains("%admin%")) {
+			msg.replace("%admin%", ac.getAdmin());
+		}
+		if(msg.contains("%message%")) {
+			TeleMessageMinecraft tmm = new TeleMessageMinecraft();
+			msg.replace("%message%", tmm.getMessage());
+		}
+		return msg;
 	}
 }

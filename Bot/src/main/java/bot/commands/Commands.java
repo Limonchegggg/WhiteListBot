@@ -77,7 +77,7 @@ public class Commands extends ListenerAdapter{
 					}
 				}.runTask(plugin);
 				e.getAuthor().openPrivateChannel().queue((channel) -> {
-					channel.sendMessage("Я сделал все что смог.").queue();
+					channel.sendMessage("Я сделал все что смог").queue();
 					plugin.stack_players.remove(ID);
 				});
 				break;

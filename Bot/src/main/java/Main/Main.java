@@ -24,6 +24,7 @@ import bot.DiscordData;
 import bot.WhiteListBot;
 import configs.ConfigCommand;
 import configs.Players;
+import locale.LocaleData;
 
 public class Main extends JavaPlugin{
 	public MySql sql;
@@ -57,6 +58,7 @@ public class Main extends JavaPlugin{
 		Players.get().addDefault("database", "database");
 		Players.get().addDefault("username", "username");
 		Players.get().addDefault("password", "password");
+		Players.get().addDefault("placeHolder", "Hello &player& how are you?");
 		Players.get().options().copyDefaults(true);
 		Players.save();
 		
@@ -69,6 +71,9 @@ public class Main extends JavaPlugin{
 		BanData.get().addDefault("Bans", null);
 		BanData.get().addDefault("Mute", null);
 		BanData.save();
+		
+		//createLocale();
+		
 		
 		this.jda = new WhiteListBot();
 		this.sql = new MySql();
@@ -162,7 +167,120 @@ public class Main extends JavaPlugin{
 		}
 		
 		
-		
+		private void createLocale() {
+			LocaleData.setup();
+	    	//Очередь
+	    	HashMap<String, String> discord = new HashMap<String, String>();
+	    	discord.put("DiscordQueueAdd", "Дорогой %player%! Теперь ты можешь играть на сервере!");
+	    	discord.put("DiscordQueueAddQueue", "Дорогой %player%! Я добавил тебя в очередь и напишу когда тебя примут!");
+	    	discord.put("DiscordQueueContain", "Вы уже состоите в очереди");
+	    	discord.put("DiscordQueueCancel", "Дорогой %player%! Мне жаль, тебе отказали, но не расстраивайся и попробуй еще раз! 😿");
+	    	discord.put("DiscordQueueAccept", "Дорогой `` %player% ``! Теперь ты можешь играть на сервере! 😎");
+	    	discord.put("DiscordQueueCommandUsing", "Использование gowl <Ник>\" + \"\\nПример **gowl Shybka**");
+	    	discord.put("DiscordQueueFail", "Я не понимаю что вы хотите написать!");
+	    	discord.put("DiscordQueueNickNameLenghtDeny", "Минимальная длинна ника 4, а максимальная 20");
+	    	discord.put("DiscordQueueNickNameDeny", "Ник должен состоять только из английских букв и/или цифр");
+	    	discord.put("DiscordQueueAccountDeny", "**Такой ник зарегистрирован или у вас уже есть аккаунт на сервере!**");
+	    	LocaleData.get().addDefault("Discord", discord);
+	    	//Дискорд помощь застрявшим
+	    	HashMap<String, String> discordHelp = new HashMap<String, String>();
+	    	discordHelp.put("DiscordHelpDeny", "Я не вижу что ты застрял, ничего делать не буду");
+	    	discordHelp.put("DiscordHelpPlayerOnServerFail", "Я не вижу тебя на сервере");
+	    	discordHelp.put("DiscordHelp", "Я сделал все что смог");
+	    	LocaleData.get().set("DiscordHelp", discordHelp);
+	    	
+	    	//Дискорд личные сообщения
+	    	HashMap<String, String> privateDiscordMessage = new HashMap<String, String>();
+	    	privateDiscordMessage.put("DiscordTellBotDeny", "Блять ну привет я тоже бот");
+	    	privateDiscordMessage.put("DiscordTellCommandUsing", "Чтобы отправить личное сообщение в игру, тебе необходимо ввести [tell <Ник игрока> <Сообщение>]");
+	    	privateDiscordMessage.put("DiscordTellPlayerOnServerFail", "Я не вижу этого игрока на сервере");
+	    	privateDiscordMessage.put("DiscordTellPlayer", "[ЛС][Discord]%player%: %message%");
+	    	LocaleData.get().set("privateDiscordMessage", privateDiscordMessage);
+	    	
+	    	//Телемост
+	    	HashMap<String, String> TeleChat = new HashMap<String, String>();
+	    	TeleChat.put("DiscordChatToMinecraft", "[Discord]%user%: %message%");
+	    	LocaleData.get().addDefault("TeleChat", TeleChat);
+	    	
+	    	//Конфиги
+	    	HashMap<String, String> Config = new HashMap<String, String>();
+	    	Config.put("ConfigReloaded", "Конфиг перезагружен");
+	    	Config.put("ConfigReloadedFail", "Ошибка перезагрузки конфига");
+	    	LocaleData.get().addDefault("Config", Config);
+	    	
+	    	//Отказ при заходе
+	    	HashMap<String, String> DenyJoin = new HashMap<String, String>();
+	    	DenyJoin.put("MinecraftJoinDeny", "Вас нет в вайтлисте");
+	    	DenyJoin.put("MinecraftJoinDenyBan", "Вы временно заблокированы");
+	    	DenyJoin.put("MinecraftQuit", "%player% вышел с сервера");
+	    	LocaleData.get().addDefault("DenyJoin", DenyJoin);
+	    	
+	    	//Чат
+	    	HashMap<String, String> Chat = new HashMap<String, String>();
+	    	Chat.put("MinecraftChatMute", "Выш чат временно заблокирован");
+	    	Chat.put("MinecraftAntiSpam", "Отдохни");
+	    	Chat.put("MinecraftLocalChat", "[Локал]%player%: %message%");
+	    	Chat.put("MinecraftGlobalChat", "[Глобал]%player%: %message%");
+	    	Chat.put("MinecraftToDiscordChat", "[Minecraft]%player%: %message%");
+	    	LocaleData.get().addDefault("Chat", Chat);
+	    	
+	    	//Бот
+	    	HashMap<String, String> Bot = new HashMap<String, String>();
+	    	Bot.put("BotStopCommand", "Бот остановлен");
+	    	Bot.put("BotStartCommand", "Бот запущен");
+	    	Bot.put("BotWrongWordAdd", "Слово %BanWord% было добавлено в список");
+	    	Bot.put("BotWrongWordRemove", "Слово %BanWord% было убрано из списка");
+	    	LocaleData.get().addDefault("Bot", Bot);
+	    	
+	    	//Отказ в праве
+	    	LocaleData.get().addDefault("PermissionDeny", "У вас недостаточно прав");
+	    	
+	    	//Бан команда
+	    	HashMap<String, String> Ban = new HashMap<String, String>();
+	    	Ban.put("AdminCommandBanUserIsBanned", "%player% уже в бане");
+	    	Ban.put("AdminCommandBanUserDoesNotInWhiteList", "banUser нет в вайтслисте");
+	    	Ban.put("AdminCommandBanTimeLenghtFail", "Неправильно указано время бана!");
+	    	Ban.put("AdminCommandBanUser", "%banUser% был забанен на %lenght% %time%");
+	    	Ban.put("AdminCommandBanUserDiscordMessage", "Мне жаль, но вы забанены по причине %reason%! Вам нужно подождать %lenght% %time% перед игрой");
+	    	LocaleData.get().addDefault("Ban", Ban);
+	    	
+	    	//Команда пардон
+	    	HashMap<String, String> pardon = new HashMap<String, String>();
+	    	pardon.put("AdminCommandPardonUserIsNoBanned", "%banUser% не забанен");
+	    	pardon.put("AdminCommandPardonUserPardon", "%banUser% был разбанен");
+	    	pardon.put("AdminCommandPardonUserPardonDiscord", "Поздравляю вас разбанили! Теперь вы можете играть на сервере!");
+	    	LocaleData.get().addDefault("Pardon", pardon);
+	    	
+	    	//Мут
+	    	HashMap<String, String> Mute = new HashMap<String, String>();
+	    	Mute.put("AdminCommandMuteUserIsMuted", "%muteUser% уже замучен");
+	    	Mute.put("AdminCommandMuteLenghtFail", "Неправильно указано время мута");
+	    	Mute.put("AdminCommandMuteUser", "%muteUser% был замучен на %lenght% %time%");
+	    	LocaleData.get().addDefault("Mute", Mute);
+	    	
+	    	//Размут
+	    	HashMap<String, String> UnMute = new HashMap<String, String>();
+	    	UnMute.put("AdminCommandUserIsNotMuted", "%muteUser% не в муте");
+	    	UnMute.put("AdminCommandUserUnMuteMessage", "Вы были размучены");
+	    	LocaleData.get().addDefault("unMute", UnMute);
+	    	
+	    	//АвтоСнятиеНаказания
+	    	HashMap<String, String> AutoPardon = new HashMap<String, String>();
+	    	AutoPardon.put("DiscordAutoPardonMessage", "Поздравляю вас разбанили! Теперь вы можете играть на сервере!");
+	    	AutoPardon.put("MinecraftUnMuteMessage", "Вы были размучены!");
+	    	LocaleData.get().addDefault("AutoPardon", AutoPardon);
+	    	
+	    	//Инвентари
+	    	HashMap<String, String> Inventoryes = new HashMap<String, String>();
+	    	Inventoryes.put("OpenEnderChest", "Вы открыли эндер сундук игрока %player%");
+	    	Inventoryes.put("OpenInventory", "Вы открыли инвентарь игрока %player%");
+	    	Inventoryes.put("OpenEnderChestFail", "Ошибка открытия Эндер Сундука у игрока %player%");
+	    	Inventoryes.put("OpenEnderChestFail", "Ошибка открытия Инвентаря у игрока %player%");
+	    	LocaleData.get().addDefault("Inventory", Inventoryes);
+	    	
+	    	LocaleData.get().options().copyDefaults(true);
+	    	LocaleData.save();
+		}
 		
 		
 		
