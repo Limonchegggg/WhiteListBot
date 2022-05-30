@@ -12,14 +12,9 @@ public class Lvl {
 	 * 
 	 * Создано Limonchegggg
 	 */
-	private ConfigCreator cc = new ConfigCreator();
 	private String PlayerName;
 	private int lvl;
 	private int experience;
-	private int lvlUp;
-	private boolean isMaxLvl = false;
-	private int lvlGoal;
-	private String nameLvl;
 	
 	
 	/*
@@ -37,7 +32,7 @@ public class Lvl {
 	 * Этот метод создает профиль игрока
 	 */
 	
-	public void CreateLvlProfile(String ProfileName){
+	public void CreateProfile(String ProfileName){
 		ConfigCreator.CreateConfig("players\\" + ProfileName+".yml");
 		ConfigCreator.get().options().copyDefaults(true);
 		ConfigCreator.save();
@@ -82,6 +77,14 @@ public class Lvl {
 		new Logging().Log("Игрок " + PlayerName + " повышает свой уровень");
 	}
 	
+	public void setLvl(String categoria, int lvl) {
+		if(path == null) {
+			new Logging().Log("Ошибка начесления уровня! Не указан путь!");
+			return;
+		}
+		ConfigCreator.get(path).getConfigurationSection(categoria).set("lvl", lvl);
+	}
+	
 	/*
 	 * Добавление очков уровня за какое либо действие
 	 */
@@ -94,12 +97,25 @@ public class Lvl {
 		experience++;
 		ConfigCreator.get(path).getConfigurationSection(categoria).set("experionce", experience);
 	}
-
+	
+	
+	
 	public int getLvl(String categoria) {
 		if(path == null) {
 			System.out.println("Ошибка получения уровня! Не указан путь!");
 			return 0;
 		}
 		return ConfigCreator.get().getConfigurationSection(categoria).getInt("lvl");
+	}
+	
+	public boolean isMaxLvl(String categoria) {
+		if(path == null) {
+			System.out.println("Ошибка! Не указан путь!");
+			return false;
+		}
+		if(ConfigCreator.get(path).getConfigurationSection(categoria).getString("lvl") == ConfigCreator.get(path).getConfigurationSection(categoria).getString("maxLvl")) {
+			return true;
+		}
+		return false;
 	}
 }
