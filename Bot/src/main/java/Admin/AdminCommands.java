@@ -13,6 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import Main.Main;
+import bot.DiscordData;
+import locale.LocaleList;
+import methods.PlaceHolder;
 import methods.Text;
 import net.md_5.bungee.api.ChatColor;
 
@@ -33,7 +36,7 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 			return false;
 		}
 		if(args.length == 0) {
-			sender.sendMessage(ChatColor.GRAY + "/adm [ban/pardon/mute/unmute/endchest]");
+			sender.sendMessage(ChatColor.GRAY + "/adm [ban/pardon/mute/unmute/endchest/inventory]");
 			return false;
 		}
 		Player player = (Player) sender;
@@ -207,12 +210,37 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 			return false;
 		case "inventory":
 			try {
-			Inventory in = Bukkit.getPlayer(args[1]).getInventory();
-			player.openInventory(in);
+			Inventory inv = Bukkit.getPlayer(args[1]).getInventory();
+			player.openInventory(inv);
 			sender.sendMessage(ChatColor.GRAY + "Вы открыли Инвентарь игрока " + args[1]);
 			}catch(Exception e) {
 				sender.sendMessage(ChatColor.GRAY + "Ошибка открытия Инвентаря у " + args[1]);
 			}
+			return false;
+		case "badWord":
+			List<String> word = DiscordData.get().getStringList("BlackWords");
+			switch(args[1]) {
+			case "add":
+				word.add(args[2]);
+				DiscordData.get().set("BlackWords", word);
+				DiscordData.save();
+				DiscordData.reload();
+				sender.sendMessage(ChatColor.GRAY + "Слово " + ChatColor.YELLOW + args[2] + ChatColor.GRAY + " было добавлено в черный список");
+				return false;
+			case "remove":
+				word.remove(args[2]);
+				DiscordData.get().set("BlackWords", word);
+				DiscordData.save();
+				DiscordData.reload();
+				sender.sendMessage(ChatColor.GRAY + "Слово " + ChatColor.YELLOW + args[2] + ChatColor.GRAY + " было убрано из черного списка");
+				return false;
+			default:
+				sender.sendMessage(ChatColor.GRAY + "/bot wrongWord [add/remove]");
+				return false;
+			}
+		case "test":
+			String msg = new PlaceHolder().setUserPlaceHolder(LocaleList.OpenInventory.toString(), args[1]);
+			sender.sendMessage(msg);
 			return false;
 		default:
 			sender.sendMessage(ChatColor.GRAY + "/adm [ban/pardon/mute/unmute]");
@@ -238,7 +266,8 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute","endchest","inventory","testPlaceHolder");
+		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute","endchest","inventory","badWord","test");
+		List<String> badword = Arrays.asList("add","remove","list");
 		List<String> time = Arrays.asList("1","2","3","4","5","6","7","8","9");
 		List<String> type = Arrays.asList("ч","м","с");
 		
@@ -274,6 +303,12 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 						if(args[1].toLowerCase().startsWith(args[1].toLowerCase()))
 							result.add(p.getName());
 					}
+				return result;
+			case "badWord":
+				for(String s : badword) {
+					if(args[1].toLowerCase().startsWith(args[1].toLowerCase()))
+						result.add(s);
+				}
 				return result;
 			default:
 				for(Player player : Bukkit.getOnlinePlayers()) {

@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import Api.ConfigCreator;
 import Main.Main;
 import configs.Players;
 import configs.PlayersGetter;
@@ -49,6 +50,9 @@ public class JoinEvent implements Listener{
 					channel.sendMessage("Похоже ты застрял, давай помогу. Введи [помоги] и я постараюсь тебя вытащить").queue();
 				});
 			}
+			ConfigCreator.CreateConfig("playrs\\"+player.getName()+".yml");
+			ConfigCreator.get().options().copyDefaults(true);
+			ConfigCreator.save();
 		}
 	@EventHandler
 	public void QuitPlaeyr(PlayerQuitEvent e) {

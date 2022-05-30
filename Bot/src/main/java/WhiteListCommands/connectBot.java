@@ -1,6 +1,5 @@
 package WhiteListCommands;
 
-import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -15,9 +14,11 @@ public class connectBot implements CommandExecutor{
 	Main main = Main.getPlugin(Main.class);
 	@Override
 	public boolean onCommand(CommandSender sender, Command com, String str, String[] args) {
-		if(!sender.hasPermission("bwt.bot")) return false;
-		if(args.length < 1) return false;
-		if(args.length == 0) {
+		if(!sender.hasPermission("bwt.bot")) { 
+			sender.sendMessage(ChatColor.RED + "У вас нет прав для этого!");
+			return false;
+		}
+		if(args.length ==0) {
 			sender.sendMessage(ChatColor.GRAY + "/bot [stop/start/restart/reloadData/reloadDiscordData/wrongWord]");
 			return false;
 		}
@@ -46,27 +47,6 @@ public class connectBot implements CommandExecutor{
 			DiscordData.save();
 			DiscordData.reload();
 			return false;
-		case "wrongWord":
-			List<String> word = DiscordData.get().getStringList("BlackWords");
-			switch(args[1]) {
-			case "add":
-				word.add(args[2]);
-				DiscordData.get().set("BlackWords", word);
-				DiscordData.save();
-				DiscordData.reload();
-				sender.sendMessage(ChatColor.GRAY + "Слово " + ChatColor.YELLOW + args[2] + ChatColor.GRAY + " было добавлено в черный список");
-				return false;
-			case "remove":
-				word.remove(args[2]);
-				DiscordData.get().set("BlackWords", word);
-				DiscordData.save();
-				DiscordData.reload();
-				sender.sendMessage(ChatColor.GRAY + "Слово " + ChatColor.YELLOW + args[2] + ChatColor.GRAY + " было убрано из черного списка");
-				return false;
-			default:
-				sender.sendMessage(ChatColor.GRAY + "/bot wrongWord [add/remove]");
-				return false;
-			}
 		default:
 			sender.sendMessage(ChatColor.GRAY + "/bot [stop/start/restart/reloadData/reloadDiscordData/wrongWord]");
 			return false;

@@ -11,7 +11,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import Admin.AdminCommands;
 import Admin.BanData;
 import Admin.Timer;
+import Api.ConfigCreator;
 import Database.MySql;
+import Database.SQLDiscord;
 import Database.SQLGetter;
 import Database.SqlConnection;
 import Events.JoinEvent;
@@ -30,6 +32,8 @@ public class Main extends JavaPlugin{
 	public MySql sql;
 	public SQLGetter data;
 	public WhiteListBot jda;
+	public SQLDiscord sqld;
+	public ConfigCreator cc;
 	//Игроки, которые застряли
 	public HashMap<String, Player> stack_players = new HashMap<String, Player>();
 	//Игроки в ванише
@@ -37,8 +41,6 @@ public class Main extends JavaPlugin{
 	//Игрок - время
 	public HashMap<String, Integer> ban_list = new HashMap<String, Integer>();
 	public HashMap<String, Integer> mute_list = new HashMap<String, Integer>();
-	
-	public HashMap<String, Integer> newguy_list = new HashMap<String, Integer>();
 	@Override
 	public void onEnable() {
 		
@@ -78,6 +80,7 @@ public class Main extends JavaPlugin{
 		this.jda = new WhiteListBot();
 		this.sql = new MySql();
 		this.data = new SQLGetter(this);
+		this.sqld = new SQLDiscord(this);
 		jda.startbot();
 		
 		getServer().getPluginCommand("connection").setExecutor(new SqlConnection());
@@ -88,7 +91,6 @@ public class Main extends JavaPlugin{
 		getServer().getPluginCommand("adm").setExecutor(new AdminCommands());
 		getServer().getPluginCommand("adm").setTabCompleter(new AdminCommands());
 		getServer().getPluginCommand("reloadConfig").setExecutor(new ConfigCommand());
-		
 		getServer().getPluginManager().registerEvents(new JoinEvent(), this);
 		getServer().getPluginManager().registerEvents(new TeleMessageMinecraft(), this);
 		try {
@@ -105,7 +107,9 @@ public class Main extends JavaPlugin{
 			
 		if(sql.isConnected()) {
 			Bukkit.getLogger().info("Database is connected");
+			sqld.CreateTable();
 			data.createTable();
+			
 		}
 		try {
 		if(!BanData.get().getStringList("Names").isEmpty()) {
@@ -167,6 +171,7 @@ public class Main extends JavaPlugin{
 		}
 		
 		
+		@SuppressWarnings("unused")
 		private void createLocale() {
 			LocaleData.setup();
 	    	//Очередь
@@ -175,8 +180,8 @@ public class Main extends JavaPlugin{
 	    	discord.put("DiscordQueueAddQueue", "Дорогой %player%! Я добавил тебя в очередь и напишу когда тебя примут!");
 	    	discord.put("DiscordQueueContain", "Вы уже состоите в очереди");
 	    	discord.put("DiscordQueueCancel", "Дорогой %player%! Мне жаль, тебе отказали, но не расстраивайся и попробуй еще раз! 😿");
-	    	discord.put("DiscordQueueAccept", "Дорогой `` %player% ``! Теперь ты можешь играть на сервере! 😎");
-	    	discord.put("DiscordQueueCommandUsing", "Использование gowl <Ник>\" + \"\\nПример **gowl Shybka**");
+	    	discord.put("DiscordQueueAccept", "Дорогой `` %duser% ``! Теперь ты можешь играть на сервере! 😎");
+	    	discord.put("DiscordQueueCommandUsing", "Использование gowl <Ник> \nПример **gowl Shybka**");
 	    	discord.put("DiscordQueueFail", "Я не понимаю что вы хотите написать!");
 	    	discord.put("DiscordQueueNickNameLenghtDeny", "Минимальная длинна ника 4, а максимальная 20");
 	    	discord.put("DiscordQueueNickNameDeny", "Ник должен состоять только из английских букв и/или цифр");
@@ -199,7 +204,7 @@ public class Main extends JavaPlugin{
 	    	
 	    	//Телемост
 	    	HashMap<String, String> TeleChat = new HashMap<String, String>();
-	    	TeleChat.put("DiscordChatToMinecraft", "[Discord]%user%: %message%");
+	    	TeleChat.put("DiscordChatToMinecraft", "[Discord]%duser%: %message%");
 	    	LocaleData.get().addDefault("TeleChat", TeleChat);
 	    	
 	    	//Конфиги
@@ -228,8 +233,8 @@ public class Main extends JavaPlugin{
 	    	HashMap<String, String> Bot = new HashMap<String, String>();
 	    	Bot.put("BotStopCommand", "Бот остановлен");
 	    	Bot.put("BotStartCommand", "Бот запущен");
-	    	Bot.put("BotWrongWordAdd", "Слово %BanWord% было добавлено в список");
-	    	Bot.put("BotWrongWordRemove", "Слово %BanWord% было убрано из списка");
+	    	Bot.put("BotWrongWordAdd", "Слово %word% было добавлено в список");
+	    	Bot.put("BotWrongWordRemove", "Слово %word% было убрано из списка");
 	    	LocaleData.get().addDefault("Bot", Bot);
 	    	
 	    	//Отказ в праве
@@ -237,10 +242,10 @@ public class Main extends JavaPlugin{
 	    	
 	    	//Бан команда
 	    	HashMap<String, String> Ban = new HashMap<String, String>();
-	    	Ban.put("AdminCommandBanUserIsBanned", "%player% уже в бане");
-	    	Ban.put("AdminCommandBanUserDoesNotInWhiteList", "banUser нет в вайтслисте");
+	    	Ban.put("AdminCommandBanUserIsBanned", "%user% уже в бане");
+	    	Ban.put("AdminCommandBanUserDoesNotInWhiteList", "%user% нет в вайтслисте");
 	    	Ban.put("AdminCommandBanTimeLenghtFail", "Неправильно указано время бана!");
-	    	Ban.put("AdminCommandBanUser", "%banUser% был забанен на %lenght% %time%");
+	    	Ban.put("AdminCommandBanUser", "%User% был забанен на %lenght% %time%");
 	    	Ban.put("AdminCommandBanUserDiscordMessage", "Мне жаль, но вы забанены по причине %reason%! Вам нужно подождать %lenght% %time% перед игрой");
 	    	LocaleData.get().addDefault("Ban", Ban);
 	    	
@@ -260,7 +265,7 @@ public class Main extends JavaPlugin{
 	    	
 	    	//Размут
 	    	HashMap<String, String> UnMute = new HashMap<String, String>();
-	    	UnMute.put("AdminCommandUserIsNotMuted", "%muteUser% не в муте");
+	    	UnMute.put("AdminCommandUserIsNotMuted", "%user% не в муте");
 	    	UnMute.put("AdminCommandUserUnMuteMessage", "Вы были размучены");
 	    	LocaleData.get().addDefault("unMute", UnMute);
 	    	
@@ -272,10 +277,10 @@ public class Main extends JavaPlugin{
 	    	
 	    	//Инвентари
 	    	HashMap<String, String> Inventoryes = new HashMap<String, String>();
-	    	Inventoryes.put("OpenEnderChest", "Вы открыли эндер сундук игрока %player%");
-	    	Inventoryes.put("OpenInventory", "Вы открыли инвентарь игрока %player%");
-	    	Inventoryes.put("OpenEnderChestFail", "Ошибка открытия Эндер Сундука у игрока %player%");
-	    	Inventoryes.put("OpenEnderChestFail", "Ошибка открытия Инвентаря у игрока %player%");
+	    	Inventoryes.put("OpenEnderChest", "Вы открыли эндер сундук игрока %user%");
+	    	Inventoryes.put("OpenInventory", "Вы открыли инвентарь игрока %user%");
+	    	Inventoryes.put("OpenEnderChestFail", "Ошибка открытия Эндер Сундука у игрока %user%");
+	    	Inventoryes.put("OpenEnderChestFail", "Ошибка открытия Инвентаря у игрока %user%");
 	    	LocaleData.get().addDefault("Inventory", Inventoryes);
 	    	
 	    	LocaleData.get().options().copyDefaults(true);

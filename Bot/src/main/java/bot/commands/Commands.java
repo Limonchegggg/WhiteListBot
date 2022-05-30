@@ -116,6 +116,7 @@ public class Commands extends ListenerAdapter{
 				if(Bukkit.getOnlinePlayers().size() == 0) {
 					return;
 				}
+				
 				for(Player player : Bukkit.getOnlinePlayers()) {
 					player.sendMessage(ChatColor.BLUE + "[Discord] " + ChatColor.WHITE + e.getAuthor().getName() + ": " + e.getMessage().getContentRaw());
 				}

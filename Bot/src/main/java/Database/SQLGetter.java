@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
 import Main.Main;
+
 
 public class SQLGetter {
 	
@@ -20,6 +22,7 @@ public class SQLGetter {
 					+ "(NAME VARCHAR(100),"
 					+ "DISCORD VARCHAR(100), "
 					+ "DISCORDID VARCHAR(100),"
+					+ "COINS VARCHAR(100),"
 					+ "PRIMARY KEY (NAME))");
 			ps.executeUpdate();
 		}catch(SQLException e) {
@@ -31,10 +34,11 @@ public class SQLGetter {
 		try {
 			if(!existsPlayer(playerName) && !existsDiscordId(discordId) && !existsDiscord(discord)) {
 				PreparedStatement ps2 = plugin.sql.getConnection().prepareStatement("INSERT IGNORE INTO whitelist "
-						+ "(NAME,DISCORD,DISCORDID) VALUES (?,?,?)");
+						+ "(NAME,DISCORD,DISCORDID,COINS) VALUES (?,?,?,?)");
 				ps2.setString(1, playerName);
 				ps2.setString(2, discord);
 				ps2.setString(3, discordId);
+				ps2.setInt(4, 1000);
 				ps2.executeUpdate();
 				return;
 			}
@@ -42,6 +46,7 @@ public class SQLGetter {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	public void removePlayer(String playerName) {
 		try {
@@ -118,5 +123,50 @@ public boolean existsPlayer(String playerName) {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	public int getCoins(String name) {
+		try {
+			PreparedStatement ps = plugin.sql.getConnection().prepareStatement("SELECT COINS FROM whitelist WHERE NAME=?");
+			ps.setString(1, name);
+			ResultSet rs = ps.executeQuery();
+			int coins;
+			if(rs.next()) {
+				coins=rs.getInt("COINS");
+				return coins;
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	public void addCoins(String name, int coin) {
+		try {
+			PreparedStatement ps = plugin.sql.getConnection().prepareStatement("UPDATE whitelist SET COINS=? WHERE NAME=?");
+			ps.setInt(1, getCoins(name)+coin);
+			ps.setString(2, name);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public void removeCoins(String name, int coin) {
+		try {
+			PreparedStatement ps = plugin.sql.getConnection().prepareStatement("UPDATE whitelist SET COINS=? WHERE NAME=?");
+			ps.setInt(1, getCoins(name)-coin);
+			ps.setString(2, name);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public void setCoins(String name, int Coins) {
+		try {
+			PreparedStatement ps = plugin.sql.getConnection().prepareStatement("UPDATE whitelist SET COINS=? WHERE NAME=?");
+			ps.setInt(1, Coins);
+			ps.setString(2, name);
+			ps.executeUpdate();
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }
