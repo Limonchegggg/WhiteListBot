@@ -20,7 +20,7 @@ public class Lvl {
 	/*
 	 * Этот параметр позволяет записать Path на время выполнения команды
 	 * Если он пустой, то ничего не произойдет
-	 * Для использования нужно писать пусть до файла
+	 * Для использования нужно писать путь до файла
 	 * @Example
 	 * path = "players\\Limonchegggg.yml"
 	 * \\ - Обязательно потому что \ не будет работать
@@ -38,6 +38,7 @@ public class Lvl {
 		ConfigCreator.save();
 	}
 	
+	//Добавления категории для прокачки
 	public void addCategoria(String categoria, int maxLvl) {
 		if(path == null) {
 			new Logging().Log("Ошибка создания категории! Не указан путь!");
