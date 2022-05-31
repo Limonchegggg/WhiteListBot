@@ -1,5 +1,6 @@
 package Survival;
 
+
 import Main.Main;
 
 public class SurvivalMain {
@@ -11,4 +12,6 @@ public class SurvivalMain {
 	public Main getMain() {
 		return main;
 	}
+	
+
 }
