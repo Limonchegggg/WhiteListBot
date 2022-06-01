@@ -18,6 +18,7 @@ import Database.SQLGetter;
 import Database.SqlConnection;
 import Events.JoinEvent;
 import Events.TeleMessageMinecraft;
+import Survival.SurvivalMain;
 import WhiteListCommands.WhiteListAdd;
 import WhiteListCommands.WhiteListRemove;
 import WhiteListCommands.connectBot;
@@ -126,6 +127,7 @@ public class Main extends JavaPlugin{
 			System.out.println("Ошибка загрузки мутов");
 		}
 		new Timer();
+		new SurvivalMain(this);
 		}
 		@Override
 		public void onDisable() {
