@@ -12,8 +12,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import Api.ConfigCreator;
 import Main.Main;
+import Survival.SurvivalMain;
+import Survival.Mechanics.Lvl;
+import Survival.Mechanics.Items.Category;
 import configs.Players;
 import configs.PlayersGetter;
 import net.dv8tion.jda.api.entities.Activity;
@@ -22,6 +24,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 public class JoinEvent implements Listener{
 	private Main plugin = Main.getPlugin(Main.class);
 	private PlayersGetter pg = new PlayersGetter();
+	private SurvivalMain sm = new SurvivalMain(plugin);
 	@EventHandler
 	public void CheckList(PlayerJoinEvent e){
 		Player player = e.getPlayer();
@@ -50,9 +53,12 @@ public class JoinEvent implements Listener{
 					channel.sendMessage("Похоже ты застрял, давай помогу. Введи [помоги] и я постараюсь тебя вытащить").queue();
 				});
 			}
-			ConfigCreator.CreateConfig("playrs\\"+player.getName()+".yml");
-			ConfigCreator.get().options().copyDefaults(true);
-			ConfigCreator.save();
+			String path = "players\\"+player.getName()+".yml";
+			Lvl lvl = new Lvl();
+			lvl.CreateProfile(path);
+			lvl.addCategoria(Category.Digging.getTitle(), 50, path);
+			sm.player_category.put(player.getName(), Category.None.getTitle());
+			
 		}
 	@EventHandler
 	public void QuitPlaeyr(PlayerQuitEvent e) {

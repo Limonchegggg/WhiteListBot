@@ -128,6 +128,7 @@ public class Main extends JavaPlugin{
 		}
 		new Timer();
 		new SurvivalMain(this);
+		
 		}
 		@Override
 		public void onDisable() {

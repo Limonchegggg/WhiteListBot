@@ -1,5 +1,5 @@
 main: Main.Main
-version: 0.0.1
+version: 1.5.2
 name: WhiteListBot
 author: Limonchegggg
 api-version: 1.18
@@ -24,8 +24,13 @@ commands:
       permission: bwt.ban
     reloadConfig:
       description: Перезагружает конфиги
-      pernission: bwt.configs
+      permission: bwt.configs
+    additem:
+      description: Добавление предмета
+      permission: bwt.survival.createItem
 permissions:
     admin:
         description: метка на админа
+    bwt.survival.createItem:
+        description: Разрешение добавления предмета
       

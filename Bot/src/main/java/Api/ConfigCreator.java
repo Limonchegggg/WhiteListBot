@@ -44,16 +44,18 @@ public class ConfigCreator {
     }
     public static FileConfiguration get(String path){
     	file = new File(Bukkit.getServer().getPluginManager().getPlugin("WhiteListBot").getDataFolder(), path);
+    	
     	customFile = YamlConfiguration.loadConfiguration(file);
+    	
     	return customFile;
     }
     
     public boolean existFile(String path) {
     	file = new File(Bukkit.getServer().getPluginManager().getPlugin("WhiteListBot").getDataFolder(), path);
-    	if(file == null) {
-    		return false;
+    	if(file != null) {
+    		return true;
     	}
-    	return true;
+    	return false;
     }
 
     public static void save(){
@@ -64,8 +66,22 @@ public class ConfigCreator {
             System.out.println(e);
         }
     }
+    
+    public static void save(String path){
+        try{
+        	file = new File(Bukkit.getServer().getPluginManager().getPlugin("WhiteListBot").getDataFolder(), path);
+            customFile.save(file);
+        }catch (IOException e){
+            System.out.println("Файл не смог сохраниться!");
+            System.out.println(e);
+        }
+    }
 
     public static void reload(){
         customFile = YamlConfiguration.loadConfiguration(file);
+    }
+    public static void reload(String path) {
+    	file = new File(Bukkit.getServer().getPluginManager().getPlugin("WhiteListBot").getDataFolder(), path);
+    	customFile = YamlConfiguration.loadConfiguration(file);
     }
 }

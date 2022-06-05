@@ -1,39 +1,37 @@
 package Survival;
 
 
-import java.util.Iterator;
+import java.util.HashMap;
 
-import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.Recipe;
-
+import Api.ConfigCreator;
 import Main.Main;
-import Survival.Mechanics.Items.PickAxe.PickAxe;
+import Survival.Events.CheckItems;
+import Survival.Mechanics.Items.Commands.CreateItem;
 
 public class SurvivalMain {
 	private Main main;
+	public HashMap<String, String> player_category;
+	//Неизменяемая переменная для записи предметов в дб
+	private static final String PATH = "items\\items.yml";
+	
 	public SurvivalMain(Main main) {
 		this.main = main;
-		DeleteRecipes();
 		
-		Bukkit.addRecipe(new PickAxe().CreateStonePickaxe());
-		Bukkit.addRecipe(new PickAxe().CreateIronPickaxe());
+		ConfigCreator.CreateConfig("items\\test.yml");
+		ConfigCreator.get().createSection("items");
+		ConfigCreator.get().options().copyDefaults(true);
+		ConfigCreator.save();
+		player_category = new HashMap<String, String>();
+		main.getServer().getPluginCommand("additem").setExecutor(new CreateItem());
+		main.getServer().getPluginManager().registerEvents(new CheckItems(), main);
 	}
 	
 	public Main getMain() {
 		return main;
 	}
 	
-	public void RemoveRecipe(String recipe) {
-		for(Iterator<Recipe> iter = Bukkit.getServer().recipeIterator(); iter.hasNext();) {
-			if(iter.next() == Bukkit.getServer().getRecipe(NamespacedKey.minecraft(recipe))) {
-				iter.remove();
-			}
-		};
-	}
-	public void DeleteRecipes() {
-		RemoveRecipe("stone_pickaxe");
-		RemoveRecipe("ireon_pickaxe");
+	public String getPath() {
+		return PATH;
 	}
 
 }
