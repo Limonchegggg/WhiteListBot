@@ -1,7 +1,10 @@
 package Api;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -83,5 +86,27 @@ public class ConfigCreator {
     public static void reload(String path) {
     	file = new File(Bukkit.getServer().getPluginManager().getPlugin("WhiteListBot").getDataFolder(), path);
     	customFile = YamlConfiguration.loadConfiguration(file);
+    }
+    /**
+     * path должен вести в папку с файлами
+     * @Метод возвращает имена всех файлов в папке
+     */
+    public static ArrayList<String> getConfigList(String path){
+    	file = new File(Bukkit.getServer().getPluginManager().getPlugin("WhiteListBot").getDataFolder(), path);
+    	ArrayList<String> config_Names = new ArrayList<String>();
+    	for(int i=0; i<file.list().length; i++) {
+    		config_Names.add(file.list()[i]);
+    	}
+    	return config_Names;
+    }
+    /**
+     * name имя файла вместе с расширением
+     */
+    public static boolean isYMLFile(String name) {
+    	String[] valid = name.split(".");
+    	if(!valid[1].contentEquals("yml")) {
+    		return false;
+    	}
+    	return true;
     }
 }

@@ -221,6 +221,10 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 			List<String> word = DiscordData.get().getStringList("BlackWords");
 			switch(args[1]) {
 			case "add":
+				if(args.length < 2) {
+					sender.sendMessage(ChatColor.GRAY + "Ошибка добавления слова, вы не указали слово");
+					return false;
+				}
 				word.add(args[2]);
 				DiscordData.get().set("BlackWords", word);
 				DiscordData.save();
@@ -228,6 +232,10 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				sender.sendMessage(ChatColor.GRAY + "Слово " + ChatColor.YELLOW + args[2] + ChatColor.GRAY + " было добавлено в черный список");
 				return false;
 			case "remove":
+				if(args.length < 2) {
+					sender.sendMessage(ChatColor.GRAY + "Ошибка добавления слова, вы не указали слово");
+					return false;
+				}
 				word.remove(args[2]);
 				DiscordData.get().set("BlackWords", word);
 				DiscordData.save();
@@ -239,7 +247,7 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				return false;
 			}
 		case "test":
-			String msg = new PlaceHolder().setUserPlaceHolder(LocaleList.OpenInventory.toString(), args[1]);
+			String msg = new PlaceHolder().setUserPlaceHolder(LocaleList.OpenInventory.getString(), args[1]);
 			sender.sendMessage(msg);
 			return false;
 		default:
@@ -266,8 +274,8 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute","endchest","inventory","badWord","test");
-		List<String> badword = Arrays.asList("add","remove","list");
+		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute","endchest","inventory","badWord");
+		List<String> badword = Arrays.asList("add","remove");
 		List<String> time = Arrays.asList("1","2","3","4","5","6","7","8","9");
 		List<String> type = Arrays.asList("ч","м","с");
 		
