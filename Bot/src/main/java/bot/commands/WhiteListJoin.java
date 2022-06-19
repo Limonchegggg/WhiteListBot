@@ -81,7 +81,6 @@ public class WhiteListJoin extends ListenerAdapter{
 					message.getAuthor().openPrivateChannel().queue((channel) -> {
 						channel.sendMessage("Дорогой `" + Nick + "`! Теперь ты можешь играть на сервере! 😎").queue();
 					});
-					message.addReaction("😎");
 					List<String> queue = DiscordData.get().getStringList("Queue");
 					queue.remove(DiscordId);
 					DiscordData.get().set("Queue", queue);
@@ -100,7 +99,6 @@ public class WhiteListJoin extends ListenerAdapter{
 					message.getAuthor().openPrivateChannel().queue((channel) -> {
 						channel.sendMessage("Дорогой `" + Nick + "`! Мне жаль, тебе отказали, но не расстраивайся и попробуй еще раз! 😿").queue();
 					});
-					message.addReaction("😿");
 					return;
 				default:
 					log("Нетот смайлик");

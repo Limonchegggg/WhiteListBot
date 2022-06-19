@@ -22,7 +22,6 @@ public class SQLGetter {
 					+ "(NAME VARCHAR(100),"
 					+ "DISCORD VARCHAR(100), "
 					+ "DISCORDID VARCHAR(100),"
-					+ "COINS VARCHAR(100),"
 					+ "PRIMARY KEY (NAME))");
 			ps.executeUpdate();
 		}catch(SQLException e) {
@@ -38,7 +37,6 @@ public class SQLGetter {
 				ps2.setString(1, playerName);
 				ps2.setString(2, discord);
 				ps2.setString(3, discordId);
-				ps2.setInt(4, 1000);
 				ps2.executeUpdate();
 				return;
 			}
@@ -138,35 +136,5 @@ public boolean existsPlayer(String playerName) {
 			e.printStackTrace();
 		}
 		return 0;
-	}
-	public void addCoins(String name, int coin) {
-		try {
-			PreparedStatement ps = plugin.sql.getConnection().prepareStatement("UPDATE whitelist SET COINS=? WHERE NAME=?");
-			ps.setInt(1, getCoins(name)+coin);
-			ps.setString(2, name);
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	public void removeCoins(String name, int coin) {
-		try {
-			PreparedStatement ps = plugin.sql.getConnection().prepareStatement("UPDATE whitelist SET COINS=? WHERE NAME=?");
-			ps.setInt(1, getCoins(name)-coin);
-			ps.setString(2, name);
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	public void setCoins(String name, int Coins) {
-		try {
-			PreparedStatement ps = plugin.sql.getConnection().prepareStatement("UPDATE whitelist SET COINS=? WHERE NAME=?");
-			ps.setInt(1, Coins);
-			ps.setString(2, name);
-			ps.executeUpdate();
-		}catch(SQLException e) {
-			e.printStackTrace();
-		}
 	}
 }

@@ -39,11 +39,9 @@ public class Lvl {
 	 *  @MaxLvl: 50 - Максимальный уровень категории
 	 *  @LocalPath: Путь до фала игрока
 	 *  
-	 *  TODO: Сделать возможность создания кастомных категорий через команды
 	 *  
 	 */
 	public void addCategoria(String categoria, int maxLvl, String localPath) {
-		System.out.println("begin");
 		if(localPath == null) {
 			new Logging().Log("Ошибка создания категории! Не указан путь!");
 			return;
@@ -52,17 +50,11 @@ public class Lvl {
 			return;
 		}
 		ConfigCreator.get(localPath).createSection(categoria);
-		System.out.println("1");
 		ConfigCreator.get().getConfigurationSection(categoria).set("lvl", 0);
-		System.out.println("2");
 		ConfigCreator.get().getConfigurationSection(categoria).set("ExperienceGoal", 100);
-		System.out.println("3");
 		ConfigCreator.get().getConfigurationSection(categoria).set("Experience", 0);
-		System.out.println("4");
 		ConfigCreator.get().getConfigurationSection(categoria).set("IsMaxLvl", false);
-		System.out.println("5");
 		ConfigCreator.get().getConfigurationSection(categoria).set("MaxLvl", maxLvl);
-		System.out.println("6");
 		ConfigCreator.save();
 		ConfigCreator.reload();
 	}

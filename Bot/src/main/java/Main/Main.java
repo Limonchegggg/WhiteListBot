@@ -135,7 +135,7 @@ public class Main extends JavaPlugin{
 			System.out.println("Ошибка загрузки мутов");
 		}
 		new Timer();
-		new SurvivalMain(this);
+		//new SurvivalMain(this);
 		
 		}
 		@Override
