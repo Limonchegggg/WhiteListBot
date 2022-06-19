@@ -28,6 +28,9 @@ commands:
     additem:
       description: Добавление предмета
       permission: bwt.survival.createItem
+    stats:
+      description: Првоерка статов
+      permissiond: bwt.stats
 permissions:
     admin:
         description: метка на админа

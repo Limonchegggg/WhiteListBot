@@ -5,7 +5,9 @@ package Survival;
 import Api.ConfigCreator;
 import Main.Main;
 import Survival.Events.CheckItems;
+import Survival.Mechanics.Items.Item;
 import Survival.Mechanics.Items.Commands.CreateItem;
+import Survival.Mechanics.Items.Commands.getLvl;
 
 public class SurvivalMain {
 	private Main main;
@@ -22,6 +24,8 @@ public class SurvivalMain {
 		
 		main.getServer().getPluginCommand("additem").setExecutor(new CreateItem());
 		main.getServer().getPluginManager().registerEvents(new CheckItems(), main);
+		main.getServer().getPluginCommand("stats").setExecutor(new getLvl());
+		new Item().LoadItems();
 	}
 	
 	public Main getMain() {

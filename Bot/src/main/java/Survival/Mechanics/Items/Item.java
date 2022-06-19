@@ -1,22 +1,18 @@
 package Survival.Mechanics.Items;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import Api.ConfigCreator;
 import Main.Main;
-import Survival.SurvivalMain;
 import console.Logging;
 
 public class Item {
-	private String name;
 	private List<String> lore;
-	private int LvLuse;
-	private int durability;
 	
 	/**
 	 * Этот параметр позволяет записать Path на время выполнения команды
@@ -69,8 +65,6 @@ public class Item {
 		
 	}
 	
-
-
 	
 	public void CreateCategory(String Category) {
 		if(path == null) {
@@ -111,68 +105,32 @@ public class Item {
 		item.addEnchantment(modify, 1);
 	}
 	
+	public int getLvl(String name) {
+		Main main = Main.getPlugin(Main.class);
+		try {
+			
+			return main.item_lvl.get(name);
+		}catch(Exception e) {
+			System.out.println(e);
+			return 0;
+		}
+	}
 	
-	public boolean canUse(String pathPlayer, String categoria) {
-		if(path == null) {
-			new Logging().Log("Ошибка! Не указан путь до файла игрока!");
+	public boolean isExistItem(String name) {
+		Main main = Main.getPlugin(Main.class);
+		if(!main.item_lvl.containsKey(name)) {
 			return false;
 		}
-		if(ConfigCreator.get(pathPlayer).getConfigurationSection(categoria).getInt("lvl") > ConfigCreator.get(path).getInt("lvl")) {
-			return true;
-		}
-		return false;
+		return true;
 	}
 	
 	
-	public String getName() {
-		this.name = ConfigCreator.get(path).getString("name");
-		return name;
-	}
 	
-	
-	public int getDurability() {
-		if(path == null) {
-			new Logging().Log("Ошибка! Не указан путь до предмета!");
-			return 0;
-		}
-		this.durability = ConfigCreator.get(path).getInt("durability");
-		return durability;
-	}
-	
-
-	public int getLvlToUse() {
-		if(path == null) {
-			new Logging().Log("Ошибка! Не указан путь до предмета!");
-			return 0;
-		}
-		this.LvLuse = ConfigCreator.get(path).getInt("lvlUse");
-		return LvLuse;
-	}
-	
-	public String getCategotria() {
-		if(path == null) {
-			new Logging().Log("Ошибка! Не указан путь до предмета!");
-			return null;
-		}
-		String categoria = ConfigCreator.get(path).getString("categoria");
-		return categoria;
-	}
-	
-	public String getID() {
-		if(path == null) {
-			new Logging().Log("Ошибка! Не указан путь до предмета!");
-			return null;
-		}
-		String ID = ConfigCreator.get(path).getString("ID");
-		return ID;
-	}
 	/**
 	 *Этот метод загружает предметы в реестр сервера для упрощения проверок
 	 */
 	public void LoadItems() {
 		Main main = Main.getPlugin(Main.class);
-		SurvivalMain sm = new SurvivalMain(main);
-		HashMap<String, Integer> levels = new HashMap<String, Integer>();
 		
 		if(ConfigCreator.getConfigList("items\\").size() == 0) {
 			new Logging().Log(("List is empty, items cannot be loaded!"));
@@ -180,13 +138,12 @@ public class Item {
 		}
 		ArrayList<String> item_names = ConfigCreator.getConfigList("items\\");
 		for(int i=0; i<item_names.size(); i++) {
-			String item = item_names.get(i);
-			String[] item_name = item.split(".");
-			if(ConfigCreator.isYMLFile(item)) {
-			//	main.item_lvl.put(item_name[0], ConfigCreator.get("items\\"+item).getInt("LvlUse"));
-			}
+			main.item_lvl.put(item_names.get(i).replace(".yml", ""), ConfigCreator.get("items\\"+item_names.get(i)).getInt("lvlUse"));
 		}
-		new Logging().Log(("Success, items was loaded!"));
+		for(Entry<String, Integer> key : main.item_lvl.entrySet()) {
+			System.out.println(key.getKey() + ": " + key.getValue());
+		}
+		new Logging().Log("Success, items was loaded!");
 		return;
 	}
 }

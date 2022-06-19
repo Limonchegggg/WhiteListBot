@@ -2,7 +2,6 @@ package locale;
 
 
 import Admin.AdminCommands;
-import Events.TeleMessageMinecraft;
 
 public class Locale {
 	public String getLocale(LocaleList locale) {
@@ -135,10 +134,6 @@ public class Locale {
 		}
 		if(msg.contains("%admin%")) {
 			msg.replace("%admin%", ac.getAdmin());
-		}
-		if(msg.contains("%message%")) {
-			TeleMessageMinecraft tmm = new TeleMessageMinecraft();
-			msg.replace("%message%", tmm.getMessage());
 		}
 		return msg;
 	}

@@ -42,10 +42,13 @@ public class Main extends JavaPlugin{
 	//Игрок - время
 	public HashMap<String, Integer> ban_list = new HashMap<String, Integer>();
 	public HashMap<String, Integer> mute_list = new HashMap<String, Integer>();
+	/**
+	 * Игрок - Катекогия - Уровень в категории
+	 */
+	public HashMap<String, HashMap<String, HashMap<String, Integer>>> player_category = new HashMap<String, HashMap<String, HashMap<String, Integer>>>(); //Игрок_Категория
 	
-	//public HashMap<String, HashMap<String, HashMap<String, Integer>>> player_category = new HashMap<String, HashMap<String, HashMap<String, Integer>>>(); //Игрок_Категория
-	//Загрузка предметов в реест сервера Пре
-	//public HashMap<String, Integer> item_lvl = new HashMap<String, Integer>();
+	//Загрузка предметов в реест сервера
+	public HashMap<String, Integer> item_lvl = new HashMap<String, Integer>();
 	
 	@Override
 	public void onEnable() {
@@ -132,7 +135,7 @@ public class Main extends JavaPlugin{
 			System.out.println("Ошибка загрузки мутов");
 		}
 		new Timer();
-		//new SurvivalMain(this);
+		new SurvivalMain(this);
 		
 		}
 		@Override

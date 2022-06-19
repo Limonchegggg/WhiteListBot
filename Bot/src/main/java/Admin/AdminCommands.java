@@ -114,7 +114,7 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				}
 				return false;
 			default:
-				sender.sendMessage(ChatColor.GRAY + "Доступно только h/m/s");
+				sender.sendMessage(ChatColor.GRAY + "Доступно только ч/м/с");
 				return false;
 			}
 		case "pardon":

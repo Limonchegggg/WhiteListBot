@@ -1,7 +1,6 @@
 package Events;
 
 
-import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import Api.ConfigCreator;
 import Main.Main;
 import Survival.Mechanics.Lvl;
 import Survival.Mechanics.Items.Category;
@@ -54,12 +52,12 @@ public class JoinEvent implements Listener{
 					channel.sendMessage("Похоже ты застрял, давай помогу. Введи [помоги] и я постараюсь тебя вытащить").queue();
 				});
 			}
-		/*	String path = "players\\"+player.getName()+".yml";
-		*	Lvl lvl = new Lvl();
-		*	lvl.CreateProfile(path);
-		*	lvl.addCategoria(Category.Digging.getTitle(), 50);
-		*	lvl.LoadLvl(player.getName());
-		*/	
+			String path = "players\\"+player.getName()+".yml";
+			Lvl lvl = new Lvl();
+			lvl.CreateProfile(path);
+			lvl.addCategoria(Category.Digging.getTitle(), 50, path);
+			lvl.LoadLvl(player.getName());
+			
 			
 		}
 	@EventHandler
@@ -68,5 +66,9 @@ public class JoinEvent implements Listener{
 			plugin.jda.getJDA().getPresence().setActivity(Activity.watching((Bukkit.getOnlinePlayers().size()-1) + "/" + Bukkit.getMaxPlayers() + " игроков"));
 			MessageChannel msgchannel = plugin.jda.getJDA().getTextChannelById(pg.getTeleMessageChannelId());
 			msgchannel.sendMessage("**" + player.getName() + " вышел с сервера**").queue();
+			
+			Lvl lvl = new Lvl();
+			lvl.SaveLvl(player.getName());
+			
 	}
 }

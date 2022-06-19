@@ -4,40 +4,18 @@ import java.util.HashMap;
 
 import Api.ConfigCreator;
 import Main.Main;
+import Survival.Mechanics.Items.Category;
 import console.Logging;
 
 public class Lvl {
-	/*
+	/**
 	 * Это класс для прокачки персонажа
 	 * Увеличения его уровня и записи в ДБ
 	 * Проверки уровня
 	 * Упрощение написания кода
 	 * 
-	 * Создано Limonchegggg
+	 * @Creator Limonchegggg
 	 */
-	private String PlayerName;
-	private int lvl;
-	private int experience;
-	private Main main = Main.getPlugin(Main.class);
-	
-	/**
-	 * Этот параметр позволяет записать Path на время выполнения команды
-	 * Если он пустой, то ничего не произойдет
-	 * Для использования нужно писать путь до файла
-	 * @Example
-	 * path = "players\\Limonchegggg.yml"
-	 * \\ - Обязательно потому что \ не будет работать
-	 * .yml это расширения файла
-	 * @ПАМЯТКА
-	 * При использовании path надо записать и использовать его всего 1 раз,
-	 * потому что программа теряет его после 1-го использования
-	 * это не баг программы, а используемого API
-	 * @Example
-	 * Config.get(path);
-	 * Config.get();
-	 * 
-	 */
-	private String path;
 
 	
 	/**
@@ -59,102 +37,190 @@ public class Lvl {
 	 *  @Experience: 0 - Экспа для прокачивания
 	 *  @IsMaxLvl: false - Зависит от показателя MaxLvl
 	 *  @MaxLvl: 50 - Максимальный уровень категории
+	 *  @LocalPath: Путь до фала игрока
 	 *  
 	 *  TODO: Сделать возможность создания кастомных категорий через команды
 	 *  
 	 */
-	public void addCategoria(String categoria, int maxLvl) {
-		if(path == null) {
+	public void addCategoria(String categoria, int maxLvl, String localPath) {
+		System.out.println("begin");
+		if(localPath == null) {
 			new Logging().Log("Ошибка создания категории! Не указан путь!");
 			return;
 		}
-		ConfigCreator.get(path).createSection(categoria);
-		ConfigCreator.get().getConfigurationSection(categoria).addDefault("lvl", 0);
-		ConfigCreator.get().getConfigurationSection(categoria).addDefault("ExperienceGoal", 100);
-		ConfigCreator.get().getConfigurationSection(categoria).addDefault("Experience", 0);
-		ConfigCreator.get().getConfigurationSection(categoria).addDefault("IsMaxLvl", false);
-		ConfigCreator.get().getConfigurationSection(categoria).addDefault("MaxLvl", maxLvl);
-		ConfigCreator.get().options().copyDefaults(true);
+		if(ConfigCreator.get(localPath).contains(categoria)) {
+			return;
+		}
+		ConfigCreator.get(localPath).createSection(categoria);
+		System.out.println("1");
+		ConfigCreator.get().getConfigurationSection(categoria).set("lvl", 0);
+		System.out.println("2");
+		ConfigCreator.get().getConfigurationSection(categoria).set("ExperienceGoal", 100);
+		System.out.println("3");
+		ConfigCreator.get().getConfigurationSection(categoria).set("Experience", 0);
+		System.out.println("4");
+		ConfigCreator.get().getConfigurationSection(categoria).set("IsMaxLvl", false);
+		System.out.println("5");
+		ConfigCreator.get().getConfigurationSection(categoria).set("MaxLvl", maxLvl);
+		System.out.println("6");
 		ConfigCreator.save();
+		ConfigCreator.reload();
 	}
 	
-	public void setPath(String path) {
-		this.path = path;
-	}
+	
 	
 	/**
 	 * Этот метод увеличивает уровень на 1 единицу при максимальном количестве
 	 * параметра experience
-	 * @Categoria это предмет тип предметов на которые нужно поднять уровень
-	 * @modifycator это число по которому будет увеличиваться количество требуемого experience
+	 * @Categoria тип предметов на которые нужно поднять уровень
+	 * @modify это число по которому будет увеличиваться количество требуемого experience
 	 */
-	//TODO: Проверить как работает этот метод
-	public void LvLUp(String categoria, double modifycator) {
-		if(path == null) {
-			new Logging().Log("Ошибка получения уровня! Не указан путь!");
+	public void addExperience(int experience, String name, String category) {
+		Main main = Main.getPlugin(Main.class);
+		if(name == null) {
+			new Logging().Log("FAIL! name is null! Add experience is not work!");
 			return;
 		}
-		this.lvl = ConfigCreator.get(path).getConfigurationSection(categoria).getInt("lvl");
-		if(lvl == ConfigCreator.get().getConfigurationSection(categoria).getInt("maxLvl")) {
-			return;
-		};
-		lvl++;
-		//Обновление модификатора
-		int experienceGoal = (int)(ConfigCreator.get(path).getConfigurationSection(categoria).getInt("ExperienceGoal")*modifycator);
-		//Запись уровня игрока в конфиг и обновление требований
-		ConfigCreator.get().getConfigurationSection(categoria).set("lvl", lvl);
-		ConfigCreator.get().getConfigurationSection(categoria).set("experience", 0);
-		ConfigCreator.get().getConfigurationSection(categoria).set("modifycator", experienceGoal);
-		new Logging().Log("Игрок " + PlayerName + " повышает свой уровень");
-	}
-	
-	public void setLvl(String categoria, int lvl) {
-		if(path == null) {
-			new Logging().Log("Ошибка начесления уровня! Не указан путь!");
+		if(category == null) {
+			new Logging().Log("FAIL! Category is null! Add experience is not work!");
 			return;
 		}
-		ConfigCreator.get(path).getConfigurationSection(categoria).set("lvl", lvl);
-	}
-	
-
-	public void addExperience(String categoria) {
-		if(path == null) {
-			System.out.println("Ошибка получения уровня! Не указан путь!");
+		if(!main.player_category.containsKey(name)) {
+			new Logging().Log("FAIL! Name is not EXISTS! Add experience is not work!");
 			return;
 		}
-		experience = ConfigCreator.get(path).getConfigurationSection(categoria).getInt("Experience");
-		experience++;
-		ConfigCreator.get().getConfigurationSection(categoria).set("Experience", experience);
+		//Увеличение Experience на 1 удиницу ПУТЬ -> Name -> CATEGORY -> LVL
+		main.player_category.get(name).get(category).replace("experience", getExperience(name, category)+experience);
 	}
 	
-	
-	
-	public int getLvl(String categoria) {
-		if(path == null) {
-			System.out.println("Ошибка получения уровня!");
+	public int getExperience(String name, String category) {
+		Main main = Main.getPlugin(Main.class);
+		if(name == null) {
+			new Logging().Log("FAIL! Name is null");
 			return 0;
 		}
-		return 0;
+		if(category == null) {
+			new Logging().Log("FAIL! Category is null! Getting experience is not work!");
+			return 0;
+		}
+		if(!main.player_category.containsKey(name)) {
+			new Logging().Log("FAIL! Name not EXISTS! Getting experience is not work!");
+			return 0;
+		}
+		try {
+			//Получение уровня ПУТЬ -> Name -> CATEGORY -> LVL
+			return main.player_category.get(name).get(category).get("experience");
+		}catch(Exception e) {
+			System.out.println(e.getStackTrace());
+			return 0;
+		}
+	}
+	/**
+	 * Увеличение уровня на 1 единицу
+	 * @modify
+	 *  отвечает за изменение необхходимого количество опыта
+	 * 
+	 */
+	public void lvlUp(String name, String category, double modify) {
+		Main main = Main.getPlugin(Main.class);
+		if(name == null) {
+			new Logging().Log("FAIL! name is null! LvlUp is not Work!");
+			return;
+		}
+		if(category == null) {
+			new Logging().Log("FAIL! category is null! LvlUp is not Work!");
+			return;
+		}
+		if(isMaxLvl(name, category)) {
+			return;
+		}
+		if(!main.player_category.containsKey(name)) {
+			new Logging().Log("FAIL! Name is not EXISTS! LvlUp is not Work!");
+			return;
+		}
+		
+		
+		//Увеличение уровня на 1 единицу ПУТЬ -> Name -> CATEGORY -> LVL
+		main.player_category.get(name).get(category).replace("lvl", (1+getLvl(name, category)));
+		main.player_category.get(name).get(category).replace("goal", (int) (getExpGoal(name, category)*modify));
+		
+		main.player_category.get(name).get(category).replace("experience", 0);
+		
 	}
 	
-	public boolean isMaxLvl(String categoria) {
-		if(path == null) {
-			System.out.println("Ошибка! Не указан путь!");
+	public int getExpGoal(String name, String category) {
+		Main main = Main.getPlugin(Main.class);
+		if(name == null) {
+			new Logging().Log("FAIL! name is null! getExpGoal is not Work!");
+			return 0;
+		}
+		if(category == null) {
+			new Logging().Log("FAIL! category is null! getExpGoal is not Work!");
+			return 0;
+		}
+		
+		if(!main.player_category.containsKey(name)) {
+			new Logging().Log("FAIL! Name is not EXISTS! getExpGoal is not Work!");
+			return 0;
+		}
+		return main.player_category.get(name).get(category).get("goal");
+	}
+	
+	public boolean isMaxLvl(String name, String category) {
+		Main main = Main.getPlugin(Main.class);
+		if(name == null) {
+			new Logging().Log("FAIL! name is null! isMaxLvl is not Work!");
 			return false;
 		}
-		if(ConfigCreator.get(path).getConfigurationSection(categoria).getString("lvl") == ConfigCreator.get(path).getConfigurationSection(categoria).getString("maxLvl")) {
+		if(category == null) {
+			new Logging().Log("FAIL! category is null! isMaxLvl is not Work!");
+			return false;
+		}
+		
+		if(!main.player_category.containsKey(name)) {
+			new Logging().Log("FAIL! Name is not EXISTS! isMaxLvl is not Work!");
+			return false;
+		}
+		
+		if(getLvl(name, category) >= 50) {
 			return true;
 		}
+		
 		return false;
 	}
 	
+	public int getLvl(String name, String Category) {
+		Main main = Main.getPlugin(Main.class);
+		if(name == null || Category == null) {
+			System.out.println("Ошибка получения уровня!");
+			return 0;
+		}
+		return main.player_category.get(name).get(Category).get("lvl");
+	}
+	
+	
+	
 	public void LoadLvl(String playerName) {
+		Main main = Main.getPlugin(Main.class);
 		HashMap<String, Integer> lvl_list = new HashMap<String, Integer>();
-		lvl_list.put("lvl", ConfigCreator.get("players\\"+playerName+".yml").getInt("lvl"));
+		lvl_list.put("lvl", ConfigCreator.get("players\\"+playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).getInt("lvl"));
+		lvl_list.put("experience", ConfigCreator.get("players\\"+playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).getInt("Experience"));
+		lvl_list.put("goal", ConfigCreator.get("players\\"+playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).getInt("ExperienceGoal"));
 		HashMap<String, HashMap<String, Integer>> Categoryes = new HashMap<String, HashMap<String, Integer>>();
 		Categoryes.put("Digging", lvl_list);
-		//main.player_category.put(playerName, Categoryes);
+		main.player_category.put(playerName, Categoryes);
 		return;
+		
+	}
+	
+	public void SaveLvl(String playerName) {
+		Main main = Main.getPlugin(Main.class);
+		HashMap<String, Integer> stats = main.player_category.get(playerName).get(Category.Digging.getTitle());
+		ConfigCreator.get("players\\"+playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).set("lvl", stats.get("lvl"));
+		ConfigCreator.get().getConfigurationSection(Category.Digging.getTitle()).set("ExperienceGoal", stats.get("goal"));
+		ConfigCreator.get().getConfigurationSection(Category.Digging.getTitle()).set("Experience", stats.get("experience"));
+		ConfigCreator.save();
+		ConfigCreator.reload();
 		
 	}
 }

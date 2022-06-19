@@ -1,10 +1,8 @@
 package Api;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -103,8 +101,7 @@ public class ConfigCreator {
      * name имя файла вместе с расширением
      */
     public static boolean isYMLFile(String name) {
-    	String[] valid = name.split(".");
-    	if(!valid[1].contentEquals("yml")) {
+    	if(!name.contains(".yml")) {
     		return false;
     	}
     	return true;
