@@ -153,11 +153,9 @@ public class Item {
 	 */
 	public void LoadBlackList() {
 		Main main = Main.getPlugin(Main.class);
-		if(ConfigCreator.get("items\\BlackList.yml") == null) {
-			ConfigCreator.CreateConfig("items\\BlackList.yml");
-			ConfigCreator.get().createSection("BlackList");
-			ConfigCreator.get().options().copyDefaults(true);
-		}
+		ConfigCreator.CreateConfig("items\\BlackList.yml");
+		ConfigCreator.get().createSection("BlackList");
+		ConfigCreator.get().options().copyDefaults(true);
 		
 		main.BlackListBlock = ConfigCreator.get("items\\BlackList.yml").getStringList("BlackList");
 		
