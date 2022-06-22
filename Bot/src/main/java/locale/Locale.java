@@ -8,7 +8,6 @@ public class Locale {
 		switch(locale) {
 		case AdminCommandBanTimeLenghtFail:
 			return LocaleData.get().getConfigurationSection("Ban").getString("AdminCommandBanTimeLenghtFail");
-
 		case AdminCommandBanUser:
 			return LocaleData.get().getConfigurationSection("Ban").getString("AdminCommandBanUser");
 		case AdminCommandBanUserDiscordMessage:

@@ -25,7 +25,7 @@ commands:
     reloadConfig:
       description: Перезагружает конфиги
       permission: bwt.configs
-    additem:
+    item:
       description: Добавление предмета
       permission: bwt.survival.createItem
     stats:

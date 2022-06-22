@@ -146,4 +146,41 @@ public class Item {
 		new Logging().Log("Success, items was loaded!");
 		return;
 	}
+	
+	
+	/**
+	 * Метод загружает блоки или предметы с которых не будет падать опыт
+	 */
+	public void LoadBlackList() {
+		Main main = Main.getPlugin(Main.class);
+		if(ConfigCreator.get("items\\BlackList.yml") == null) {
+			ConfigCreator.CreateConfig("items\\BlackList.yml");
+			ConfigCreator.get().createSection("BlackList");
+			ConfigCreator.get().options().copyDefaults(true);
+		}
+		
+		main.BlackListBlock = ConfigCreator.get("items\\BlackList.yml").getStringList("BlackList");
+		
+	}
+	
+	public void addToBlackList(String itemName) {
+		List<String> list = ConfigCreator.get("items\\BlackList.yml").getStringList("BlackList");
+		list.add(itemName);
+		ConfigCreator.get().set("BlackList", list);
+		Main.getPlugin(Main.class).BlackListBlock = ConfigCreator.get("items\\BlackList.yml").getStringList("BlackList");
+	}
+	
+	public void removeToBlackList(String itemName) {
+		List<String> list = ConfigCreator.get("items\\BlackList.yml").getStringList("BlackList");
+		list.remove(itemName);
+		ConfigCreator.get().set("BlackList", list);
+		Main.getPlugin(Main.class).BlackListBlock = ConfigCreator.get("items\\BlackList.yml").getStringList("BlackList");
+	}
+	
+	public boolean IsBlackListed(String name) {
+		if(Main.getPlugin(Main.class).BlackListBlock.contains(name)) {
+			return true;
+		}
+		return false;
+	}
 }

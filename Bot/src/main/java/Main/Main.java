@@ -3,6 +3,7 @@ package Main;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -49,6 +50,11 @@ public class Main extends JavaPlugin{
 	
 	//Загрузка предметов в реест сервера
 	public HashMap<String, Integer> item_lvl = new HashMap<String, Integer>();
+	
+	/**
+	 * Черный список вещей за которые не будет падать экспа
+	 */
+	public List<String> BlackListBlock = new ArrayList<String>();
 	
 	@Override
 	public void onEnable() {
@@ -135,7 +141,7 @@ public class Main extends JavaPlugin{
 			System.out.println("Ошибка загрузки мутов");
 		}
 		new Timer();
-		//new SurvivalMain(this);
+		new SurvivalMain(this);
 		
 		}
 		@Override

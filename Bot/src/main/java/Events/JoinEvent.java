@@ -52,12 +52,12 @@ public class JoinEvent implements Listener{
 					channel.sendMessage("Похоже ты застрял, давай помогу. Введи [помоги] и я постараюсь тебя вытащить").queue();
 				});
 			}
-	/*		String path = "players\\"+player.getName()+".yml";
-	*		Lvl lvl = new Lvl();
-	*		lvl.CreateProfile(path);
-	*		lvl.addCategoria(Category.Digging.getTitle(), 50, path);
-	*		lvl.LoadLvl(player.getName());
-	*/		
+		String path = "players\\"+player.getName()+".yml";
+			Lvl lvl = new Lvl();
+			lvl.CreateProfile(path);
+			lvl.addCategoria(Category.Digging.getTitle(), 50, path);
+			lvl.LoadLvl(player.getName());
+			
 			
 		}
 	@EventHandler
@@ -67,8 +67,8 @@ public class JoinEvent implements Listener{
 			MessageChannel msgchannel = plugin.jda.getJDA().getTextChannelById(pg.getTeleMessageChannelId());
 			msgchannel.sendMessage("**" + player.getName() + " вышел с сервера**").queue();
 			
-		//	Lvl lvl = new Lvl();
-		//	lvl.SaveLvl(player.getName());
+			Lvl lvl = new Lvl();
+			lvl.SaveLvl(player.getName());
 			
 	}
 }
