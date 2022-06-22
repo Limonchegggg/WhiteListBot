@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -14,7 +13,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.inventory.PrepareSmithingEvent;
+import org.bukkit.event.inventory.SmithItemEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -249,11 +250,6 @@ public class CheckItems implements Listener{
 			return;
 		}
 		if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < it.getLvl(hand.getType().name())) {
-			ArrayList<String> lore = new ArrayList<String>();
-			lore.set(0, "Необходимый уровень " + it.getLvl(hand.getType().name()));
-			ItemMeta m = hand.getItemMeta();
-			m.setLore(lore);
-			hand.setItemMeta(m);
 			e.setCancelled(true);
 			player.sendMessage(ChatColor.GRAY + "У вас недостаточный уровень");
 			return;
@@ -280,8 +276,67 @@ public class CheckItems implements Listener{
 		for(int i=0; i<players.size(); i++) {
 			Player player = (Player) players.get(i);
 			if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < it.getLvl(hand.getType().name())) {
-				e.setResult(null);
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add("Необходимый уровень " + it.getLvl(hand.getType().name()));
+				ItemMeta m = hand.getItemMeta();
+				m.setLore(lore);
+				hand.setItemMeta(m);
+				e.setResult(hand);
+				
 				player.sendMessage(ChatColor.GRAY + "У вас недостаточный уровень");
+				return;
+			}
+		}
+	}
+	@EventHandler
+	public void SmithCancel(SmithItemEvent e) {
+		Lvl lvl = new Lvl();
+		Item it = new Item();
+		Player player = (Player) e.getWhoClicked();
+		ItemStack hand = e.getCurrentItem();
+		if(hand == null) {
+			return;
+		}
+		if(hand.getType().isAir()) {
+			return;
+		}
+		if(!it.isExistItem(hand.getType().name())) {
+			return;
+		}
+		if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < it.getLvl(hand.getType().name())) {
+			e.setCancelled(true);
+			player.sendMessage(ChatColor.GRAY + "У вас недостаточный уровень");
+			return;
+		}
+	}
+	
+	@EventHandler
+	public void Info(PrepareItemCraftEvent e) {
+		Lvl lvl = new Lvl();
+		Item it = new Item();
+		if(e.getViewers() == null) return;
+		List<HumanEntity> players =  e.getViewers();
+		if(e.getRecipe() == null) return;
+		ItemStack hand = e.getRecipe().getResult();
+		if(hand == null) {
+			return;
+		}
+		if(hand.getType().isAir()) {
+			return;
+		}
+		if(!it.isExistItem(hand.getType().name())) {
+			return;
+		}
+		for(int i=0; i<players.size(); i++) {
+			Player player = (Player) players.get(i);
+			if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < it.getLvl(hand.getType().name())) {
+				ArrayList<String> lore = new ArrayList<String>();
+				lore.add("Необходимый уровень " + it.getLvl(hand.getType().name()));
+				ItemMeta m = hand.getItemMeta();
+				m.setLore(lore);
+				hand.setItemMeta(m);
+				e.getInventory().setResult(hand);
+				
 				return;
 			}
 		}

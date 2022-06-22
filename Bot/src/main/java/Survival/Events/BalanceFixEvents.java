@@ -1,5 +1,6 @@
 package Survival.Events;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -22,7 +23,9 @@ public class BalanceFixEvents implements Listener{
 		if(!(e.getTransformedEntity() instanceof Villager)) return;
 		Villager vil = (Villager) e.getTransformedEntity();
 		if(e.getTransformReason() == TransformReason.CURED) {
-			vil.setBaby();
+			Villager v = (Villager) vil.getWorld().spawnEntity(vil.getLocation(), EntityType.VILLAGER);
+			vil.remove();
+			v.setBaby();
 			return;
 		}
 	}
@@ -31,19 +34,22 @@ public class BalanceFixEvents implements Listener{
 		Player player = e.getPlayer();
 		switch(e.getItem().getType()) {
 		case PORKCHOP:
-			player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 300, 0, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 100, 0, false));
 			return;
 		case COD:
-			player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 300, 0, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 100, 0, false));
 			return;
 		case CHICKEN:
-			player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 300, 0, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 100, 0, false));
 			return;
 		case RABBIT:
-			player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 300, 0, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 100, 0, false));
 			return;
 		case BEEF:
-			player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 300, 0, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 100, 0, false));
+			return;
+		case MUTTON:
+			player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 100, 0, false));
 			return;
 		default:
 			return;
