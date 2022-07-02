@@ -18,6 +18,7 @@ public class ConfigCreator {
     //Finds or generates the custom config file
     public static void CreateConfig(@NotNull String path){
         file = new File(Bukkit.getServer().getPluginManager().getPlugin("WhiteListBot").getDataFolder(), path);
+        
 
         if (!file.exists()){
             try{
@@ -105,5 +106,14 @@ public class ConfigCreator {
     		return false;
     	}
     	return true;
+    }
+    
+    public static void DeleteFile(String path) {
+    	file = new File(Bukkit.getServer().getPluginManager().getPlugin("WhiteListBot").getDataFolder(), path);
+    	file.delete();
+    }
+    
+    public static void DeleteFile() {
+    	file.delete();
     }
 }

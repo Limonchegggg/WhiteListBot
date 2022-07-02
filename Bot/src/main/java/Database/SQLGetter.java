@@ -1,10 +1,10 @@
 package Database;
 
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 
 import Main.Main;
 
@@ -33,7 +33,7 @@ public class SQLGetter {
 		try {
 			if(!existsPlayer(playerName) && !existsDiscordId(discordId) && !existsDiscord(discord)) {
 				PreparedStatement ps2 = plugin.sql.getConnection().prepareStatement("INSERT IGNORE INTO whitelist "
-						+ "(NAME,DISCORD,DISCORDID,COINS) VALUES (?,?,?,?)");
+						+ "(NAME,DISCORD,DISCORDID) VALUES (?,?,?)");
 				ps2.setString(1, playerName);
 				ps2.setString(2, discord);
 				ps2.setString(3, discordId);
@@ -122,19 +122,18 @@ public boolean existsPlayer(String playerName) {
 		}
 		return false;
 	}
-	public int getCoins(String name) {
+	
+	public Array getKeys(){
 		try {
-			PreparedStatement ps = plugin.sql.getConnection().prepareStatement("SELECT COINS FROM whitelist WHERE NAME=?");
-			ps.setString(1, name);
+			PreparedStatement ps = plugin.sql.getConnection().prepareStatement("SELECT NAME FROM whitelist WHERE NAME=?");
 			ResultSet rs = ps.executeQuery();
-			int coins;
-			if(rs.next()) {
-				coins=rs.getInt("COINS");
-				return coins;
-			}
-		}catch(SQLException e) {
+			Array list = rs.getArray("NAME");
+			return list;
+		} catch (SQLException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return 0;
+		
+		
 	}
 }

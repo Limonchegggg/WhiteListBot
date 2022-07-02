@@ -1,5 +1,6 @@
 package Survival.Mechanics.Items;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -49,7 +50,7 @@ public class Item {
 	 * @lvlUse - Минимальный уровень для использования предмета
 	 */
 	public void CreateItem(String ID ,String name, List<String> lore, short durability, String categoria, int lvlUse) {
-		ConfigCreator.CreateConfig("items\\" + ID + ".yml");
+		ConfigCreator.CreateConfig("items"+ File.separator + ID + ".yml");
 		ConfigCreator.get().addDefault("ID", ID);
 		ConfigCreator.get().addDefault("name", name);
 		ConfigCreator.get().set("Lore", lore);
@@ -59,7 +60,7 @@ public class Item {
 		ConfigCreator.get().options().copyDefaults(true);
 		ConfigCreator.save();
 		
-		List<String> list = ConfigCreator.get("items\\settings.yml").getStringList("items");
+		List<String> list = ConfigCreator.get("items"+ File.separator +"settings.yml").getStringList("items");
 		list.add(name);
 		 ConfigCreator.get().set("items", list);
 		
@@ -131,20 +132,25 @@ public class Item {
 	 */
 	public void LoadItems() {
 		Main main = Main.getPlugin(Main.class);
-		
-		if(ConfigCreator.getConfigList("items\\").size() == 0) {
+		try {
+		if(ConfigCreator.getConfigList("items" + File.separator).size() == 0) {
 			new Logging().Log(("List is empty, items cannot be loaded!"));
 			return;
 		}
-		ArrayList<String> item_names = ConfigCreator.getConfigList("items\\");
+		ArrayList<String> item_names = ConfigCreator.getConfigList("items"+File.separator);
 		for(int i=0; i<item_names.size(); i++) {
-			main.item_lvl.put(item_names.get(i).replace(".yml", ""), ConfigCreator.get("items\\"+item_names.get(i)).getInt("lvlUse"));
+			main.item_lvl.put(item_names.get(i).replace(".yml", ""), ConfigCreator.get("items"+ File.separator +item_names.get(i)).getInt("lvlUse"));
 		}
+		System.out.println("---Items---");
 		for(Entry<String, Integer> key : main.item_lvl.entrySet()) {
 			System.out.println(key.getKey() + ": " + key.getValue());
 		}
 		new Logging().Log("Success, items was loaded!");
-		return;
+		}catch(Exception e) {
+			new Logging().Log(("Directory is empty, items cannot be loaded!"));
+			return;
+		}
+		
 	}
 	
 	
@@ -153,26 +159,40 @@ public class Item {
 	 */
 	public void LoadBlackList() {
 		Main main = Main.getPlugin(Main.class);
-		ConfigCreator.CreateConfig("items\\BlackList.yml");
+		try {
+		if(!ConfigCreator.getConfigList("items"+ File.separator).contains("BlackList.yml")) {
+		ConfigCreator.CreateConfig("items"+ File.separator +"BlackList.yml");
 		ConfigCreator.get().createSection("BlackList");
 		ConfigCreator.get().options().copyDefaults(true);
+		ConfigCreator.save();
+		ConfigCreator.reload();
+		}
 		
-		main.BlackListBlock = ConfigCreator.get("items\\BlackList.yml").getStringList("BlackList");
+		main.BlackListBlock = ConfigCreator.get("items"+ File.separator +"BlackList.yml").getStringList("BlackList");
+		System.out.println("---BlackListItems---");
+		for(int i=0; i<ConfigCreator.get("items"+ File.separator +"BlackList.yml").getStringList("BlackList").size(); i++) {
+			main.BlackListBlock.add(ConfigCreator.get("items"+ File.separator +"BlackList.yml").getStringList("BlackList").get(i));
+			System.out.println(main.BlackListBlock.get(i));
+		}
+		}catch(Exception e) {
+			new Logging().Log(("Directory is empty, items cannot be loaded!"));
+			return;
+		}
 		
 	}
 	
 	public void addToBlackList(String itemName) {
-		List<String> list = ConfigCreator.get("items\\BlackList.yml").getStringList("BlackList");
-		list.add(itemName);
-		ConfigCreator.get().set("BlackList", list);
-		Main.getPlugin(Main.class).BlackListBlock = ConfigCreator.get("items\\BlackList.yml").getStringList("BlackList");
+		Main.getPlugin(Main.class).BlackListBlock.add(itemName);
+		ConfigCreator.get("items"+ File.separator +"BlackList.yml").set("BlackList", Main.getPlugin(Main.class).BlackListBlock);
+		ConfigCreator.save();
+		ConfigCreator.reload();
 	}
 	
 	public void removeToBlackList(String itemName) {
-		List<String> list = ConfigCreator.get("items\\BlackList.yml").getStringList("BlackList");
-		list.remove(itemName);
-		ConfigCreator.get().set("BlackList", list);
-		Main.getPlugin(Main.class).BlackListBlock = ConfigCreator.get("items\\BlackList.yml").getStringList("BlackList");
+		Main.getPlugin(Main.class).BlackListBlock.remove(itemName);
+		ConfigCreator.get("items"+ File.separator +"BlackList.yml").set("BlackList", Main.getPlugin(Main.class).BlackListBlock);
+		ConfigCreator.save();
+		ConfigCreator.reload();
 	}
 	
 	public boolean IsBlackListed(String name) {

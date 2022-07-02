@@ -21,6 +21,8 @@ public class WhiteListBot{
 			this.jda = JDABuilder.createDefault(TOKEN).build();
 			jda.addEventListener(new Commands());
 			jda.addEventListener(new WhiteListJoin());
+			
+			
 			jda.getPresence().setActivity(Activity.watching(Bukkit.getOnlinePlayers().size() + "/" + Bukkit.getMaxPlayers()));
 			System.out.println("Bot has started!");
 		}catch(Exception e) {

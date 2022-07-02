@@ -31,9 +31,24 @@ commands:
     stats:
       description: Првоерка статов
       permissiond: bwt.stats
+    lvl:
+      description: Уровни
+      permission: bwt.admin.lvl
+    hat:
+      description: Шляпы на бошку
+      permission: bwt.hat
+    lvlcommand:
+      description: Добавление уровня
+      permission: bwt.commands
 permissions:
     admin:
         description: метка на админа
     bwt.survival.createItem:
         description: Разрешение добавления предмета
+    bwt.admin.lvl:
+        description: Разрешает менять и смотреть уровни игроков
+    bwt.hat:
+        description: Позволяет надеть шляпу
+    bwt.commands:
+        description: Позволяет давать на комманды уровень
       

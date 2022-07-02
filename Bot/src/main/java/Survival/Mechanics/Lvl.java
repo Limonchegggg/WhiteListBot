@@ -1,11 +1,18 @@
 package Survival.Mechanics;
 
+import java.io.File;
 import java.util.HashMap;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import Api.ConfigCreator;
 import Main.Main;
 import Survival.Mechanics.Items.Category;
 import console.Logging;
+import net.md_5.bungee.api.ChatColor;
 
 public class Lvl {
 	/**
@@ -115,6 +122,7 @@ public class Lvl {
 	 */
 	public void lvlUp(String name, String category, double modify) {
 		Main main = Main.getPlugin(Main.class);
+		Player player = Bukkit.getPlayer(name);
 		if(name == null) {
 			new Logging().Log("FAIL! name is null! LvlUp is not Work!");
 			return;
@@ -131,13 +139,53 @@ public class Lvl {
 			return;
 		}
 		
-		
+		int lvl = getLvl(name, category)+1;
 		//Увеличение уровня на 1 единицу ПУТЬ -> Name -> CATEGORY -> LVL
-		main.player_category.get(name).get(category).replace("lvl", (1+getLvl(name, category)));
+		main.player_category.get(name).get(category).replace("lvl", lvl);
 		main.player_category.get(name).get(category).replace("goal", (int) (getExpGoal(name, category)*modify));
 		
 		main.player_category.get(name).get(category).replace("experience", 0);
 		
+		
+		Scoreboard board = player.getScoreboard();
+		Team team = board.getTeam(name);
+		team.setSuffix(ChatColor.GREEN +" [" + ChatColor.YELLOW + getLvl(player.getName(), Category.Digging.getTitle()) + " уровень" + ChatColor.GREEN +"]");
+		
+	}
+	
+	public void lvlDown(String name, String category, double modify) {
+		Main main = Main.getPlugin(Main.class);
+		Player player = Bukkit.getPlayer(name);
+		if(name == null) {
+			new Logging().Log("FAIL! name is null! LvlUp is not Work!");
+			return;
+		}
+		if(category == null) {
+			new Logging().Log("FAIL! category is null! LvlUp is not Work!");
+			return;
+		}
+		if(!main.player_category.containsKey(name)) {
+			new Logging().Log("FAIL! Name is not EXISTS! LvlUp is not Work!");
+			return;
+		}
+		int lvl = getLvl(name, category);
+		
+		int nextLvl = lvl-1;
+		
+		int exp = 100;
+		for(int i=0; i<nextLvl; i++) {
+			exp = (int) (exp*modify);
+		}
+		
+		//Уменьшения уровня на 1 единицу ПУТЬ -> Name -> CATEGORY -> LVL
+		main.player_category.get(name).get(category).replace("lvl", nextLvl);
+		main.player_category.get(name).get(category).replace("goal", exp);
+		
+		main.player_category.get(name).get(category).replace("experience", 0);
+		
+		Scoreboard board = player.getScoreboard();
+		Team team = board.getTeam(name);
+		team.setSuffix(ChatColor.GREEN +" [" + ChatColor.YELLOW + getLvl(player.getName(), Category.Digging.getTitle()) + " уровень" + ChatColor.GREEN +"]");
 	}
 	
 	public int getExpGoal(String name, String category) {
@@ -195,9 +243,9 @@ public class Lvl {
 	public void LoadLvl(String playerName) {
 		Main main = Main.getPlugin(Main.class);
 		HashMap<String, Integer> lvl_list = new HashMap<String, Integer>();
-		lvl_list.put("lvl", ConfigCreator.get("players\\"+playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).getInt("lvl"));
-		lvl_list.put("experience", ConfigCreator.get("players\\"+playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).getInt("Experience"));
-		lvl_list.put("goal", ConfigCreator.get("players\\"+playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).getInt("ExperienceGoal"));
+		lvl_list.put("lvl", ConfigCreator.get("players"+ File.separator +playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).getInt("lvl"));
+		lvl_list.put("experience", ConfigCreator.get("players"+ File.separator +playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).getInt("Experience"));
+		lvl_list.put("goal", ConfigCreator.get("players"+ File.separator +playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).getInt("ExperienceGoal"));
 		HashMap<String, HashMap<String, Integer>> Categoryes = new HashMap<String, HashMap<String, Integer>>();
 		Categoryes.put("Digging", lvl_list);
 		main.player_category.put(playerName, Categoryes);
@@ -207,16 +255,13 @@ public class Lvl {
 	
 	public void SaveLvl(String playerName) {
 		Main main = Main.getPlugin(Main.class);
+		if(!main.player_category.containsKey(playerName)) return;
 		HashMap<String, Integer> stats = main.player_category.get(playerName).get(Category.Digging.getTitle());
-		ConfigCreator.get("players\\"+playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).set("lvl", stats.get("lvl"));
+		ConfigCreator.get("players"+ File.separator +playerName+".yml").getConfigurationSection(Category.Digging.getTitle()).set("lvl", stats.get("lvl"));
 		ConfigCreator.get().getConfigurationSection(Category.Digging.getTitle()).set("ExperienceGoal", stats.get("goal"));
 		ConfigCreator.get().getConfigurationSection(Category.Digging.getTitle()).set("Experience", stats.get("experience"));
 		ConfigCreator.save();
 		ConfigCreator.reload();
 		
 	} 
-	
-	
-	
-
 }

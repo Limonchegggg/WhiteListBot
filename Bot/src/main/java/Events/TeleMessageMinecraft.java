@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import Main.Main;
+import Survival.Mechanics.Lvl;
+import Survival.Mechanics.Items.Category;
 import bot.DiscordData;
 import configs.PlayersGetter;
 import console.Logging;
@@ -28,6 +30,7 @@ public class TeleMessageMinecraft implements Listener{
 	@EventHandler
 		public void getChat(AsyncPlayerChatEvent e) {
 		Player player = e.getPlayer();
+		Lvl lvl = new Lvl();
 		String messages = e.getMessage();
 		if(messages.contains("@")) {
 			messages = messages.replace('@', '\0');
@@ -70,7 +73,7 @@ public class TeleMessageMinecraft implements Listener{
 							entity.sendMessage(ChatColor.GREEN + "[Локал] " + ChatColor.WHITE + player.getName() + ": " + e.getMessage());
 						}
 					}
-					player.sendMessage(ChatColor.GREEN + "[Локал] " + ChatColor.WHITE + player.getName() + ": " + e.getMessage());
+					player.sendMessage(ChatColor.GREEN + "[Локал] " + ChatColor.WHITE + player.getName() + ChatColor.GREEN +" [" + ChatColor.YELLOW +lvl.getLvl(player.getName(), Category.Digging.getTitle()) + " уровень" + ChatColor.GREEN +"]" + ": " + e.getMessage());
 					log.Log("[Локал] " + player.getName() + ": " + e.getMessage());
 					cancel();
 				}
@@ -79,7 +82,7 @@ public class TeleMessageMinecraft implements Listener{
 		}else
 		messages = messages.replace('!', ' ');
 		for(Player chat : Bukkit.getOnlinePlayers()) {
-			chat.sendMessage(ChatColor.GOLD + "[Глобал] " + ChatColor.WHITE + player.getName() + ":" + messages);
+			chat.sendMessage(ChatColor.GOLD + "[Глобал] " + ChatColor.WHITE + player.getName() + ChatColor.GREEN +" [" + ChatColor.YELLOW +lvl.getLvl(player.getName(), Category.Digging.getTitle()) + " уровень" + ChatColor.GREEN +"]" + ":" + messages);
 		}
 		log.Log("[Глобал] " + player.getName() + ":" + messages);
 		//Отправка сообщения в чат дискорд
@@ -87,7 +90,7 @@ public class TeleMessageMinecraft implements Listener{
 		PlayersGetter pg = new PlayersGetter();
 		MessageChannel msgch = main.jda.getJDA().getTextChannelById(pg.getTeleMessageChannelId());
 		try {
-		msgch.sendMessage("**[Minecraft]** " + player.getName() + ":" + messages).queue();
+		msgch.sendMessage("**[Minecraft]** " + player.getName()+" [" +lvl.getLvl(player.getName(), Category.Digging.getTitle()) + " уровень]" + ":" + messages).queue();
 		}catch(ErrorResponseException e1) {
 			System.out.println(e1);
 		}

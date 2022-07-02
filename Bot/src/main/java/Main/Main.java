@@ -20,6 +20,7 @@ import Database.SqlConnection;
 import Events.JoinEvent;
 import Events.TeleMessageMinecraft;
 import Survival.SurvivalMain;
+import WhiteListCommands.HatCommand;
 import WhiteListCommands.WhiteListAdd;
 import WhiteListCommands.WhiteListRemove;
 import WhiteListCommands.connectBot;
@@ -31,6 +32,7 @@ import configs.Players;
 import locale.LocaleData;
 
 public class Main extends JavaPlugin{
+	public boolean ServerWork = false;
 	public MySql sql;
 	public SQLGetter data;
 	public WhiteListBot jda;
@@ -55,6 +57,11 @@ public class Main extends JavaPlugin{
 	 * Черный список вещей за которые не будет падать экспа
 	 */
 	public List<String> BlackListBlock = new ArrayList<String>();
+	
+	/**
+	 * Список Команда - Уровень
+	 */
+	public HashMap<String, Integer> CommandLevelMap = new HashMap<String, Integer>();
 	
 	@Override
 	public void onEnable() {
@@ -106,6 +113,7 @@ public class Main extends JavaPlugin{
 		getServer().getPluginCommand("adm").setExecutor(new AdminCommands());
 		getServer().getPluginCommand("adm").setTabCompleter(new AdminCommands());
 		getServer().getPluginCommand("reloadConfig").setExecutor(new ConfigCommand());
+		getServer().getPluginCommand("hat").setExecutor(new HatCommand());
 		getServer().getPluginManager().registerEvents(new JoinEvent(), this);
 		getServer().getPluginManager().registerEvents(new TeleMessageMinecraft(), this);
 		try {
@@ -142,7 +150,7 @@ public class Main extends JavaPlugin{
 		}
 		new Timer();
 		new SurvivalMain(this);
-		
+		ServerWork = true;
 		}
 		@Override
 		public void onDisable() {
@@ -150,6 +158,7 @@ public class Main extends JavaPlugin{
 			new BanData().saveMute();
 			sql.disconnect();
 			jda.stopBot();
+			ServerWork = false;
 		}
 		
 		@Override
