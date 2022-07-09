@@ -7,9 +7,11 @@ import java.util.Map.Entry;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import Api.ConfigCreator;
 import Main.Main;
+import Survival.Mechanics.Items.Modifycator.BuffsType;
 import console.Logging;
 
 public class Item {
@@ -62,7 +64,7 @@ public class Item {
 		
 		List<String> list = ConfigCreator.get("items"+ File.separator +"settings.yml").getStringList("items");
 		list.add(name);
-		 ConfigCreator.get().set("items", list);
+		ConfigCreator.get().set("items", list);
 		
 	}
 	
@@ -126,6 +128,31 @@ public class Item {
 	}
 	
 	
+	public int getBuffLvl(ItemStack item, BuffsType buff) {
+		ItemMeta meta = item.getItemMeta();
+		
+		List<String> lore = meta.getLore();
+		String[] buffLvl = null;
+		
+		switch(buff){
+		case копание:
+			return 0;
+		case прыжок:
+			for(int i=0; i<lore.size(); i++) {
+				if(lore.get(i).toLowerCase().contains(BuffsType.копание.getTitle())) {
+					buffLvl = lore.get(i).split(" ");
+					continue;
+				}
+			}
+			return Integer.parseInt(buffLvl[1]);
+		case скорость:
+			return 0;
+		default:
+			return 0;
+			
+		}
+	}
+
 	
 	/**
 	 *Этот метод загружает предметы в реестр сервера для упрощения проверок
@@ -139,7 +166,9 @@ public class Item {
 		}
 		ArrayList<String> item_names = ConfigCreator.getConfigList("items"+File.separator);
 		for(int i=0; i<item_names.size(); i++) {
-			main.item_lvl.put(item_names.get(i).replace(".yml", ""), ConfigCreator.get("items"+ File.separator +item_names.get(i)).getInt("lvlUse"));
+			String name = item_names.get(i).replace(".yml", ""); // Имя предмета
+			String configName = item_names.get(i); // Файл предмета
+			main.item_lvl.put(name, ConfigCreator.get("items"+ File.separator + configName).getInt("lvlUse"));
 		}
 		System.out.println("---Items---");
 		for(Entry<String, Integer> key : main.item_lvl.entrySet()) {

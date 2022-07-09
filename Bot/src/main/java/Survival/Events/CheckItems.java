@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -17,6 +16,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
@@ -36,6 +36,8 @@ import Api.ConfigCreator;
 import Survival.Mechanics.Lvl;
 import Survival.Mechanics.Items.Category;
 import Survival.Mechanics.Items.Item;
+import Survival.Mechanics.Items.Modifycator;
+import Survival.Mechanics.Items.Modifycator.BuffsType;
 import net.md_5.bungee.api.ChatColor;
 
 public class CheckItems implements Listener{
@@ -74,6 +76,14 @@ public class CheckItems implements Listener{
 				if(ConfigCreator.get("items"+ File.separator +list.get(i)).getInt("lvlUse") == lvl.getLvl(player.getName(), Category.Digging.getTitle())) {
 					String item = list.get(i).replace(".yml", "");
 					player.sendMessage(ChatColor.GRAY + item);
+				}
+			}
+			
+			ArrayList<String> coms = ConfigCreator.getConfigList("command"+File.separator);
+			for(int i=0; i<coms.size(); i++) {
+				if(ConfigCreator.get("command"+File.separator + coms.get(i)).getInt("Lvl") == lvl.getLvl(player.getName(), Category.Digging.getTitle())) {
+					String com = coms.get(i).replace(".yml", "");
+					player.sendMessage(ChatColor.GRAY + "/" + com);
 				}
 			}
 			player.sendMessage(ChatColor.GREEN + "-------------------------------");
@@ -116,6 +126,15 @@ public class CheckItems implements Listener{
 					String item = list.get(i).replace(".yml", "");
 					player.sendMessage(ChatColor.GRAY + item);
 				}
+			}
+			
+			ArrayList<String> coms = ConfigCreator.getConfigList("command"+File.separator);
+			for(int i=0; i<coms.size(); i++) {
+				if(ConfigCreator.get("command"+File.separator + coms.get(i)).getInt("Lvl") == lvl.getLvl(player.getName(), Category.Digging.getTitle())) {
+					String com = coms.get(i).replace(".yml", "");
+					player.sendMessage(ChatColor.GRAY + "/" + com);
+				}
+					
 			}
 			player.sendMessage(ChatColor.GREEN + "-------------------------------");
 		}
@@ -305,7 +324,18 @@ public class CheckItems implements Listener{
 				return;
 			}
 		}
+		
+		Modifycator mod = new Modifycator();
+		
+		ItemStack modItem = e.getInventory().getItem(1);
+		for(int i=0; i<players.size(); i++) {
+			Player player = (Player) players.get(i);
+			if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < mod.getMinLvl(modItem)) {
+				e.setResult(mod.addMod(e.getInventory().getItem(0), modItem, BuffsType.прыжок));
+			}
+		}
 	}
+		
 	@EventHandler
 	public void SmithCancel(SmithItemEvent e) {
 		Lvl lvl = new Lvl();
@@ -360,15 +390,45 @@ public class CheckItems implements Listener{
 			}
 		}
 	}
+	
+	@EventHandler
+	public void ThrowEvent(ProjectileLaunchEvent e) {
+		if(!(e.getEntity().getShooter() instanceof Player)) return;
+		Player player = (Player) e.getEntity().getShooter();
+		if(player.getInventory().getItemInMainHand().getItemMeta().getLore() == null) return;
+		switch(e.getEntity().getType()) {
+		case SNOWBALL:
+			if(player.getInventory().getItemInMainHand().getItemMeta().getLore().contains("Запускает игрока")) {
+				e.getEntity().addPassenger(player);
+			}
+			return;
+		default:
+			return;
+		}
+	}
 	@EventHandler
 	public void TakeMobs(PlayerInteractEntityEvent e) {
 		try {
 			if(e.getRightClicked() == null) return;
-			if(e.getRightClicked().getType() == EntityType.ITEM_FRAME) return;
-			if(e.getPlayer().getInventory().getItemInMainHand().getType() != Material.AIR) return;
 			LivingEntity ent = (LivingEntity) e.getRightClicked();
 			Player player = e.getPlayer();
-			player.addPassenger(ent);
+			switch(e.getRightClicked().getType()) {
+			case PLAYER:
+				
+				if(player.getPassengers().size() >= 1) return;
+				if(!player.getInventory().getHelmet().getType().equals(Material.SADDLE)) return;
+				player.addPassenger(ent);
+				return;
+			case ITEM_FRAME:
+				return;
+			default:
+				
+				if(player.getPassengers().size() >= 1) return;
+				if(!player.isSneaking()) return;
+				player.addPassenger(ent);
+				return;
+			}
+			
 		}catch(Exception ee) {
 			
 		}
@@ -377,25 +437,105 @@ public class CheckItems implements Listener{
 	@EventHandler
 	public void playerRemovePass(PlayerToggleSneakEvent e) {
 		try {
-			if(e.getPlayer().getPassenger() != null) {
+			if(e.getPlayer().isSneaking()) return;
+			if(e.getPlayer().getPassengers().size() > 0) {
 				e.getPlayer().removePassenger(e.getPlayer().getPassenger());
 			}
 		}catch(Exception ee) {
 			
 		}
 	}
-	
-	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void PlayerMoveMob(PlayerMoveEvent e) {
-		try {
-			if(e.getPlayer().getPassenger() != null) {
-				e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10, 1, true));
-			}
-		}catch(Exception ee) {
-			
+	public void moveWithMobs(PlayerMoveEvent e) {
+		if(e.getPlayer().getPassengers().size() > 0) {
+			e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10, 1, true));
 		}
 	}
 	
+	@EventHandler
+	public void CheckArmor(PlayerMoveEvent e) {
+		Lvl lvl = new Lvl();
+		Item it = new Item();
+		Player player = e.getPlayer();
+		int i = 0+(int)(Math.random()*5);
+		switch(i) {
+		case 1:
+			ItemStack helmet = player.getInventory().getHelmet();
+			if(helmet == null) {
+				return;
+			}
+			if(helmet.getType().isAir()) {
+				return;
+			}
+			if(!it.isExistItem(helmet.getType().name())) {
+				return;
+			}
+			if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < it.getLvl(helmet.getType().name())) {
+				player.getInventory().setHelmet(new ItemStack(Material.AIR, 1));
+				player.getWorld().dropItemNaturally(player.getLocation(), helmet);
+				player.sendMessage(ChatColor.GRAY + "У вас недостаточный уровень");
+				return;
+			}
+			break;
+		case 2:
+			ItemStack chestplate = player.getInventory().getChestplate();
+			if(chestplate == null) {
+				return;
+			}
+			if(chestplate.getType().isAir()) {
+				return;
+			}
+			if(!it.isExistItem(chestplate.getType().name())) {
+				return;
+			}
+			if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < it.getLvl(chestplate.getType().name())) {
+				player.getInventory().setChestplate(new ItemStack(Material.AIR, 1));
+				player.getWorld().dropItemNaturally(player.getLocation(), chestplate);
+				player.sendMessage(ChatColor.GRAY + "У вас недостаточный уровень");
+				return;
+			}
+			break;
+		case 3:
+			ItemStack leggings = player.getInventory().getLeggings();
+			if(leggings == null) {
+				return;
+			}
+			if(leggings.getType().isAir()) {
+				return;
+			}
+			if(!it.isExistItem(leggings.getType().name())) {
+				return;
+			}
+			if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < it.getLvl(leggings.getType().name())) {
+				player.getInventory().setLeggings(new ItemStack(Material.AIR, 1));
+				player.getWorld().dropItemNaturally(player.getLocation(), leggings);
+				player.sendMessage(ChatColor.GRAY + "У вас недостаточный уровень");
+				return;
+			}
+			break;
+		case 4:
+			ItemStack boots = player.getInventory().getBoots();
+			if(boots == null) {
+				return;
+			}
+			if(boots.getType().isAir()) {
+				return;
+			}
+			if(!it.isExistItem(boots.getType().name())) {
+				return;
+			}
+			if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < it.getLvl(boots.getType().name())) {
+				player.getInventory().setBoots(new ItemStack(Material.AIR, 1));
+				player.getWorld().dropItemNaturally(player.getLocation(), boots);
+				player.sendMessage(ChatColor.GRAY + "У вас недостаточный уровень");
+				return;
+			}
+			break;
+		default:
+			break;
+		}
+		}
 	
-}
+	
+
+	}

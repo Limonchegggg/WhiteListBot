@@ -46,7 +46,6 @@ public class LvlCommand implements CommandExecutor, TabCompleter{
 		List<String> commands = Arrays.asList("add","remove");
 		List<String> nums = Arrays.asList("1","2","3","4","5","6","7","8","9");
 		
-		
 		switch(args.length) {
 		case 1:
 			return commands;

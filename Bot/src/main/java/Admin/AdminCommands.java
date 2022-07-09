@@ -11,8 +11,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import Main.Main;
+import Survival.Mechanics.Items.Modifycator;
 import bot.DiscordData;
 import locale.LocaleList;
 import methods.PlaceHolder;
@@ -41,6 +43,7 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 		}
 		Player player = (Player) sender;
 		Text text = new Text();
+		Modifycator mod = new Modifycator();
 		switch(args[0]) {
 		case "ban":
 			if(args.length < 5) {
@@ -250,6 +253,17 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 			String msg = new PlaceHolder().setUserPlaceHolder(LocaleList.OpenInventory.getString(), args[1]);
 			sender.sendMessage(msg);
 			return false;
+		case "getMod":
+			String item = args[2];
+			player.getInventory().addItem(Main.getPlugin(Main.class).mods.get(item));
+			return false;
+		case "lvl":
+			ItemStack item1 = player.getInventory().getItemInMainHand();
+			player.sendMessage("MinLvl: " + mod.getMinLvl(item1));
+			player.sendMessage("LvlBuff: "+ mod.getLvlBuff(item1));
+			player.sendMessage("Buff: " + mod.getBuff(item1));
+			player.sendMessage("Use: " + mod.getUse(item1));
+			return false;
 		default:
 			sender.sendMessage(ChatColor.GRAY + "/adm [ban/pardon/mute/unmute]");
 			return false;
@@ -274,7 +288,7 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute","endchest","inventory","badWord");
+		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute","endchest","inventory","badWord","getMod");
 		List<String> badword = Arrays.asList("add","remove");
 		List<String> time = Arrays.asList("1","2","3","4","5","6","7","8","9");
 		List<String> type = Arrays.asList("ч","м","с");

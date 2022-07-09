@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import Admin.AdminCommands;
@@ -62,6 +63,11 @@ public class Main extends JavaPlugin{
 	 * Список Команда - Уровень
 	 */
 	public HashMap<String, Integer> CommandLevelMap = new HashMap<String, Integer>();
+	
+	/*
+	 * Реестр модов
+	 */
+	public HashMap<String, ItemStack> mods = new HashMap<String, ItemStack>();
 	
 	@Override
 	public void onEnable() {

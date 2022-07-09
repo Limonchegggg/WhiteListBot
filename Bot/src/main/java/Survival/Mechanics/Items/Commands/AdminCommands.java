@@ -57,6 +57,13 @@ public class AdminCommands implements CommandExecutor,TabCompleter{
 					player.sendMessage(ChatColor.GRAY + item);
 				}
 			}
+			ArrayList<String> coms = ConfigCreator.getConfigList("command"+File.separator);
+			for(int i=0; i<coms.size(); i++) {
+				if(ConfigCreator.get("command"+File.separator + coms.get(i)).getInt("Lvl") == lvl.getLvl(player.getName(), Category.Digging.getTitle())) {
+					String com = coms.get(i).replace(".yml", "");
+					player.sendMessage(ChatColor.GRAY + "/" + com);
+				}
+			}
 			player.sendMessage(ChatColor.GREEN + "-------------------------------");
 			sender.sendMessage(ChatColor.GRAY + "Вы добавили игроку " + ChatColor.YELLOW + args[1] + " " + args[2] + ChatColor.GRAY + " уровней");
 			return false;

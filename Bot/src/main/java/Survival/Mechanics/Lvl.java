@@ -152,7 +152,6 @@ public class Lvl {
 		team.setSuffix(ChatColor.GREEN +" [" + ChatColor.YELLOW + getLvl(player.getName(), Category.Digging.getTitle()) + " уровень" + ChatColor.GREEN +"]");
 		
 	}
-	
 	public void lvlDown(String name, String category, double modify) {
 		Main main = Main.getPlugin(Main.class);
 		Player player = Bukkit.getPlayer(name);
@@ -172,6 +171,10 @@ public class Lvl {
 		
 		int nextLvl = lvl-1;
 		
+		if(nextLvl < 0) {
+			nextLvl = 0;
+		}
+		
 		int exp = 100;
 		for(int i=0; i<nextLvl; i++) {
 			exp = (int) (exp*modify);
@@ -186,6 +189,39 @@ public class Lvl {
 		Scoreboard board = player.getScoreboard();
 		Team team = board.getTeam(name);
 		team.setSuffix(ChatColor.GREEN +" [" + ChatColor.YELLOW + getLvl(player.getName(), Category.Digging.getTitle()) + " уровень" + ChatColor.GREEN +"]");
+	}
+	
+	public void setLvl(String name, String category, double modify, int lvl) {
+		Main main = Main.getPlugin(Main.class);
+		Player player = Bukkit.getPlayer(name);
+		if(name == null) {
+			new Logging().Log("FAIL! name is null! LvlUp is not Work!");
+			return;
+		}
+		if(category == null) {
+			new Logging().Log("FAIL! category is null! LvlUp is not Work!");
+			return;
+		}
+		if(!main.player_category.containsKey(name)) {
+			new Logging().Log("FAIL! Name is not EXISTS! LvlUp is not Work!");
+			return;
+		}
+		
+		int exp = getExperience(name, category);
+		
+		for(int i=0; i<lvl; i++) {
+			exp = (int) (exp*modify);
+		}
+		
+		main.player_category.get(name).get(category).replace("lvl", lvl);
+		main.player_category.get(name).get(category).replace("goal", exp);
+		
+		main.player_category.get(name).get(category).replace("experience", 0);
+		
+		Scoreboard board = player.getScoreboard();
+		Team team = board.getTeam(name);
+		team.setSuffix(ChatColor.GREEN +" [" + ChatColor.YELLOW + getLvl(player.getName(), Category.Digging.getTitle()) + " уровень" + ChatColor.GREEN +"]");
+		
 	}
 	
 	public int getExpGoal(String name, String category) {
