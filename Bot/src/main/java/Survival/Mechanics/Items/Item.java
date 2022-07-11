@@ -149,7 +149,6 @@ public class Item {
 			return 0;
 		default:
 			return 0;
-			
 		}
 	}
 

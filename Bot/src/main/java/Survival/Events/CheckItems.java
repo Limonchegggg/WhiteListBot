@@ -297,6 +297,7 @@ public class CheckItems implements Listener{
 	public void SmithingCancelled(PrepareSmithingEvent e) {
 		Lvl lvl = new Lvl();
 		Item it = new Item();
+		Modifycator mod = new Modifycator();
 		if(e.getViewers() == null) return;
 		List<HumanEntity> players =  e.getViewers();
 		ItemStack hand = e.getResult();
@@ -306,7 +307,7 @@ public class CheckItems implements Listener{
 		if(hand.getType().isAir()) {
 			return;
 		}
-		if(!it.isExistItem(hand.getType().name())) {
+		if(!it.isExistItem(hand.getType().name()) || !mod.containsMod(e.getView().getItem(1))) {
 			return;
 		}
 		for(int i=0; i<players.size(); i++) {
@@ -320,14 +321,17 @@ public class CheckItems implements Listener{
 				hand.setItemMeta(m);
 				e.setResult(hand);
 				
+				player.sendMessage(e.getView().getItem(0).getType().name());
+				player.sendMessage(e.getView().getItem(1).getType().name());
+				
 				player.sendMessage(ChatColor.GRAY + "У вас недостаточный уровень");
 				return;
 			}
 		}
 		
-		Modifycator mod = new Modifycator();
 		
-		ItemStack modItem = e.getInventory().getItem(1);
+		
+		ItemStack modItem = e.getView().getItem(1);
 		for(int i=0; i<players.size(); i++) {
 			Player player = (Player) players.get(i);
 			if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < mod.getMinLvl(modItem)) {

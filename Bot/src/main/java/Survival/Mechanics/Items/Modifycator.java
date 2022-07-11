@@ -186,34 +186,32 @@ public class Modifycator{
 		return true;
 	}
 	
-	public ItemStack addMod(ItemStack item ,ItemStack mod, BuffsType buff) {
-		ItemMeta metaMod = mod.getItemMeta();
-		List<String> loreMod = metaMod.getLore();
+	public ItemStack addMod(ItemStack item, ItemStack mod, BuffsType buff) {
 		
-		ItemMeta itemMeta = item.getItemMeta();
-		List<String> ItemLore = itemMeta.getLore();
 		
-		if(!Main.getPlugin(Main.class).mods.containsKey(metaMod.getDisplayName())) {
+		
+		if(!Main.getPlugin(Main.class).mods.containsKey(mod.getItemMeta().getDisplayName())) {
 			return null;
 		}
 		
 		Item it = new Item();
-		
+		ItemMeta meta = item.getItemMeta();
 		switch(buff) {
 		case копание:
 			return null;
 		case прыжок:
-			try {
-				for(int i=0; i<ItemLore.size(); i++) {
-					if(ItemLore.get(i).toLowerCase().contains("Прыжок ")) {
-						ItemLore.set(i ,"Прыжок " + it.getBuffLvl(item, buff)+1);
-					}
+			for(int i=0; i<mod.getItemMeta().getLore().size(); i++) {
+				if(mod.getItemMeta().getLore().get(i).toLowerCase().contains("прыжок")) {
+					continue;
 				}
-			
-			}catch(Exception ee) {
-				ItemLore.add("Прыжок " + 1);
 			}
-			return null;
+			List<String> lore = meta.getLore();
+			lore.add("Прыжок " + 1);
+			meta.setLore(lore);
+			
+			item.setItemMeta(meta);
+			
+			return item;
 		case скорость:
 			return null;
 		default:
