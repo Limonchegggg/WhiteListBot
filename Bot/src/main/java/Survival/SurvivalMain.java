@@ -10,7 +10,7 @@ import Survival.Mechanics.CommandLevel;
 import Survival.Mechanics.Items.CraftItem;
 import Survival.Mechanics.Items.InvisibleFrame;
 import Survival.Mechanics.Items.Item;
-import Survival.Mechanics.Items.Modifycator;
+import Survival.Mechanics.Items.Med;
 import Survival.Mechanics.Items.Commands.AdminCommands;
 import Survival.Mechanics.Items.Commands.CreateItem;
 import Survival.Mechanics.Items.Commands.EventCommand;
@@ -48,7 +48,9 @@ public class SurvivalMain {
 		
 		main.getServer().addRecipe(new CraftItem().Snowball());
 		
-		new Modifycator().loadMods();
+		new Med().CreateSettings();
+		new Med().loadPerks();
+		
 	}
 	public Main getMain() {
 		return main;

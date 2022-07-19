@@ -1,7 +1,6 @@
 package Survival.Mechanics;
 
 import java.io.File;
-import java.util.Map.Entry;
 
 import Api.ConfigCreator;
 import Main.Main;
@@ -52,10 +51,6 @@ public class CommandLevel {
 		
 		for(int i=0; i<ConfigCreator.getConfigList("command"+File.separator).size(); i++) {
 			main.CommandLevelMap.put("/"+ConfigCreator.getConfigList("command"+File.separator).get(i).replace(".yml", ""), ConfigCreator.get("command"+File.separator+ConfigCreator.getConfigList("command"+File.separator).get(i)).getInt("Lvl"));
-		}
-		System.out.println("---Commands---");
-		for(Entry<String, Integer> key : main.CommandLevelMap.entrySet()) {
-			System.out.println(key.getKey() + ": " + key.getValue());
 		}
 		}catch(Exception e) {
 			new Logging().Log("Command lvl was not loaded!");

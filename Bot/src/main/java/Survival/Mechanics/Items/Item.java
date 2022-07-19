@@ -3,15 +3,12 @@ package Survival.Mechanics.Items;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import Api.ConfigCreator;
 import Main.Main;
-import Survival.Mechanics.Items.Modifycator.BuffsType;
 import console.Logging;
 
 public class Item {
@@ -128,29 +125,6 @@ public class Item {
 	}
 	
 	
-	public int getBuffLvl(ItemStack item, BuffsType buff) {
-		ItemMeta meta = item.getItemMeta();
-		
-		List<String> lore = meta.getLore();
-		String[] buffLvl = null;
-		
-		switch(buff){
-		case копание:
-			return 0;
-		case прыжок:
-			for(int i=0; i<lore.size(); i++) {
-				if(lore.get(i).toLowerCase().contains(BuffsType.копание.getTitle())) {
-					buffLvl = lore.get(i).split(" ");
-					continue;
-				}
-			}
-			return Integer.parseInt(buffLvl[1]);
-		case скорость:
-			return 0;
-		default:
-			return 0;
-		}
-	}
 
 	
 	/**
@@ -168,10 +142,6 @@ public class Item {
 			String name = item_names.get(i).replace(".yml", ""); // Имя предмета
 			String configName = item_names.get(i); // Файл предмета
 			main.item_lvl.put(name, ConfigCreator.get("items"+ File.separator + configName).getInt("lvlUse"));
-		}
-		System.out.println("---Items---");
-		for(Entry<String, Integer> key : main.item_lvl.entrySet()) {
-			System.out.println(key.getKey() + ": " + key.getValue());
 		}
 		new Logging().Log("Success, items was loaded!");
 		}catch(Exception e) {
@@ -200,7 +170,6 @@ public class Item {
 		System.out.println("---BlackListItems---");
 		for(int i=0; i<ConfigCreator.get("items"+ File.separator +"BlackList.yml").getStringList("BlackList").size(); i++) {
 			main.BlackListBlock.add(ConfigCreator.get("items"+ File.separator +"BlackList.yml").getStringList("BlackList").get(i));
-			System.out.println(main.BlackListBlock.get(i));
 		}
 		}catch(Exception e) {
 			new Logging().Log(("Directory is empty, items cannot be loaded!"));

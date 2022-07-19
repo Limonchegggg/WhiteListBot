@@ -40,6 +40,9 @@ commands:
     lvlcommand:
       description: Добавление уровня
       permission: bwt.commands
+    database:
+      description: Работа с базами
+      permission: bwt.database
 permissions:
     admin:
         description: метка на админа
@@ -51,4 +54,6 @@ permissions:
         description: Позволяет надеть шляпу
     bwt.commands:
         description: Позволяет давать на комманды уровень
+    bwt.database:
+        description: Позволяет работать с базами
       

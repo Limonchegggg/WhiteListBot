@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -33,11 +34,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import Api.ConfigCreator;
+import Main.Main;
 import Survival.Mechanics.Lvl;
 import Survival.Mechanics.Items.Category;
 import Survival.Mechanics.Items.Item;
-import Survival.Mechanics.Items.Modifycator;
-import Survival.Mechanics.Items.Modifycator.BuffsType;
+import Survival.Mechanics.Items.Med;
 import net.md_5.bungee.api.ChatColor;
 
 public class CheckItems implements Listener{
@@ -293,11 +294,10 @@ public class CheckItems implements Listener{
 		
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void SmithingCancelled(PrepareSmithingEvent e) {
 		Lvl lvl = new Lvl();
 		Item it = new Item();
-		Modifycator mod = new Modifycator();
 		if(e.getViewers() == null) return;
 		List<HumanEntity> players =  e.getViewers();
 		ItemStack hand = e.getResult();
@@ -307,38 +307,23 @@ public class CheckItems implements Listener{
 		if(hand.getType().isAir()) {
 			return;
 		}
-		if(!it.isExistItem(hand.getType().name()) || !mod.containsMod(e.getView().getItem(1))) {
-			return;
-		}
-		for(int i=0; i<players.size(); i++) {
-			Player player = (Player) players.get(i);
-			if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < it.getLvl(hand.getType().name())) {
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.GRAY + "Необходимый уровень " + it.getLvl(hand.getType().name()));
-				lore.add(ChatColor.GRAY + "Пропишите /stats для проверки уровня");
-				ItemMeta m = hand.getItemMeta();
-				m.setLore(lore);
-				hand.setItemMeta(m);
-				e.setResult(hand);
-				
-				player.sendMessage(e.getView().getItem(0).getType().name());
-				player.sendMessage(e.getView().getItem(1).getType().name());
-				
-				player.sendMessage(ChatColor.GRAY + "У вас недостаточный уровень");
-				return;
+		if(!it.isExistItem(hand.getType().name()))  return;
+			for(int i=0; i<players.size(); i++) {
+				Player player = (Player) players.get(i);
+				if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < it.getLvl(hand.getType().name())) {
+					ArrayList<String> lore = new ArrayList<String>();
+					lore.add(ChatColor.GRAY + "Необходимый уровень " + it.getLvl(hand.getType().name()));
+					lore.add(ChatColor.GRAY + "Пропишите /stats для проверки уровня");
+					ItemMeta m = hand.getItemMeta();
+					m.setLore(lore);
+					hand.setItemMeta(m);
+					e.setResult(hand);
+					player.sendMessage(ChatColor.GRAY + "У вас недостаточный уровень");
+					return;
+				}
 			}
 		}
-		
-		
-		
-		ItemStack modItem = e.getView().getItem(1);
-		for(int i=0; i<players.size(); i++) {
-			Player player = (Player) players.get(i);
-			if(lvl.getLvl(player.getName(), Category.Digging.getTitle()) < mod.getMinLvl(modItem)) {
-				e.setResult(mod.addMod(e.getInventory().getItem(0), modItem, BuffsType.прыжок));
-			}
-		}
-	}
+	
 		
 	@EventHandler
 	public void SmithCancel(SmithItemEvent e) {
@@ -456,7 +441,7 @@ public class CheckItems implements Listener{
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.NORMAL)
 	public void CheckArmor(PlayerMoveEvent e) {
 		Lvl lvl = new Lvl();
 		Item it = new Item();
@@ -540,6 +525,40 @@ public class CheckItems implements Listener{
 		}
 		}
 	
-	
-
+	@EventHandler
+	public void checkPerks(PlayerMoveEvent e) {
+		Player pl = e.getPlayer();
+		
+		ItemStack item = pl.getInventory().getItem(8);
+		
+		if(item == null) return;
+		if(item.getType().equals(Material.AIR)) return;
+		if(item.getItemMeta().getLore() == null) return;
+		Main main = Main.getPlugin(Main.class);
+		try {
+			Med m = new Med();
+			
+			List<String> lore = item.getItemMeta().getLore();
+		
+			for(int i=0; i<lore.size(); i++) {
+				pl.addPotionEffect(new PotionEffect(PotionEffectType.getByName(main.perks.get(m.getPerk(lore, i))), 100, (m.getPerkBuff(lore, i)-1)));
+			}
+		}catch(Exception ee) {
+		}
+		
 	}
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void checkKilledMob(EntityDeathEvent e) {
+		if(!(e.getEntity().getKiller() instanceof Player)) return;
+		Med m = new Med();
+		if(!m.containsMob(e.getEntity().getType())) return;
+		int chance = 0+(int)(Math.random()*ConfigCreator.get("MedSettings.yml").getInt("MobChanceDrop"));
+			//Проверка выпадения шанса и и его смерение
+		if(chance < Integer.parseInt(ConfigCreator.get("MedSettings.yml").getConfigurationSection("Mobs_Chances").getString(e.getEntity().getType().name()).split("-")[0]) 
+					&& chance > Integer.parseInt(ConfigCreator.get().getConfigurationSection("Mobs_Chances").getString(e.getEntity().getType().name()).split("-")[1])) {
+			e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), m.drop());
+		}
+	}
+	
+}

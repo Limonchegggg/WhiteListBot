@@ -66,7 +66,24 @@ public class Lvl {
 		ConfigCreator.reload();
 	}
 	
-	
+	public int getLvlFromConfig(String name, String categoria) {
+		if(ConfigCreator.get("players" + File.separator + name + ".yml") == null) {
+			return 0;
+		}
+		return ConfigCreator.get("players" + File.separator + name + ".yml").getConfigurationSection(categoria).getInt("lvl");
+	}
+	public int getExperienceFromConfig(String name, String categoria) {
+		if(ConfigCreator.get("players" + File.separator + name + ".yml") == null) {
+			return 0;
+		}
+		return ConfigCreator.get("players" + File.separator + name + ".yml").getConfigurationSection(categoria).getInt("Experience");
+	}
+	public int getExperienceGoalFromConfig(String name, String categoria) {
+		if(ConfigCreator.get("players" + File.separator + name + ".yml") == null) {
+			return 0;
+		}
+		return ConfigCreator.get("players" + File.separator + name + ".yml").getConfigurationSection(categoria).getInt("ExperienceGoal");
+	}
 	
 	/**
 	 * Этот метод увеличивает уровень на 1 единицу при максимальном количестве

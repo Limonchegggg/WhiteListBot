@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,13 +12,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
+import Database.DataBaseType;
+import Database.mongoDB.MongoDbTables.Collection;
 import Main.Main;
-import Survival.Mechanics.Items.Modifycator;
 import bot.DiscordData;
-import locale.LocaleList;
-import methods.PlaceHolder;
+import configs.Players;
 import methods.Text;
 import net.md_5.bungee.api.ChatColor;
 
@@ -41,9 +41,14 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 			sender.sendMessage(ChatColor.GRAY + "/adm [ban/pardon/mute/unmute/endchest/inventory]");
 			return false;
 		}
-		Player player = (Player) sender;
+		Player player = null;
+		if(sender instanceof Player) {
+			player = (Player) sender;
+		}else {
+			
+		}
+		
 		Text text = new Text();
-		Modifycator mod = new Modifycator();
 		switch(args[0]) {
 		case "ban":
 			if(args.length < 5) {
@@ -54,16 +59,35 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				sender.sendMessage(ChatColor.GRAY + "Это игрок в бане");
 				return false;
 			}
-			if(!main.data.existsPlayer(args[1])) {
-				sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
-				return false;
+			switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+			case All:
+				if(!main.mongoTables.containValue("NickName", args[1], Collection.WhiteList)) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+				}
+				break;
+			case MongoDB:
+				if(!main.mongoTables.containValue("NickName", args[1], Collection.WhiteList)) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+				}
+				break;
+			case MySQL:
+				if(!main.data.existsPlayer(args[1])) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+					return false;
+				}
+				break;
+			case None:
+				break;
+			default:
+				break;
+			
 			}
+			
 			int time = Integer.parseInt(args[2]);
 			if(time<0) {
 				sender.sendMessage(ChatColor.GRAY + "Длительность не может быть отрицательной!");
 				return  false;
 			}
-			admin = player.getName();
 			user = args[1];
 			lenght = time;
 			time1 = args[3];
@@ -81,9 +105,29 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 					Bukkit.getPlayer(args[1]).kickPlayer("Вы были забанены на " + time + " часов");
 				}
 				try {
-				main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
-					channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " часов перед игрой.").queue();
-				});
+					switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+					case All:
+						main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
+							channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " часов перед игрой.").queue();
+						});
+						break;
+					case MongoDB:
+						Document doc = main.mongoTables.getDocument("NickName", user, Collection.WhiteList);
+						main.jda.getJDA().openPrivateChannelById(doc.getString("_id")).queue((channel) -> {
+							channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " часов перед игрой.").queue();
+						});
+						break;
+					case MySQL:
+						main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
+							channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " часов перед игрой.").queue();
+						});
+						break;
+					case None:
+						break;
+					default:
+						break;
+					
+					}
 				}catch(Exception e) {
 					
 				}
@@ -95,9 +139,29 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				Bukkit.getPlayer(args[1]).kickPlayer("Вы были забанены на " + time + " минут");
 				}
 				try {
-				main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
-					channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " минут перед игрой.").queue();
-				});
+					switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+					case All:
+						main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
+							channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " минут перед игрой.").queue();
+						});
+						break;
+					case MongoDB:
+						Document doc = main.mongoTables.getDocument("NickName", user, Collection.WhiteList);
+						main.jda.getJDA().openPrivateChannelById(doc.getString("_id")).queue((channel) -> {
+							channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " минут перед игрой.").queue();
+						});
+						break;
+					case MySQL:
+						main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
+							channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " минут перед игрой.").queue();
+						});
+						break;
+					case None:
+						break;
+					default:
+						break;
+					
+					}
 				}catch(Exception e) {
 					
 				}
@@ -109,9 +173,29 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				Bukkit.getPlayer(args[1]).kickPlayer("Вы были забанены на " + time + " секунд");
 				}
 				try {
-				main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
-					channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " секунд перед игрой.").queue();
-				});
+					switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+					case All:
+						main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
+							channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " секунд перед игрой.").queue();
+						});
+						break;
+					case MongoDB:
+						Document doc = main.mongoTables.getDocument("NickName", user, Collection.WhiteList);
+						main.jda.getJDA().openPrivateChannelById(doc.getString("_id")).queue((channel) -> {
+							channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " секунд перед игрой.").queue();
+						});
+						break;
+					case MySQL:
+						main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
+							channel.sendMessage("Мне жаль, но тебя забанили по причине `" + discordReason +"`! Тебе нужно подождать " + time + " секунд перед игрой.").queue();
+						});
+						break;
+					case None:
+						break;
+					default:
+						break;
+					
+					}
 				}catch(Exception e) {
 					
 				}
@@ -129,15 +213,54 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				sender.sendMessage(ChatColor.GRAY + "Этот игрок не в бане");
 				return false;
 			}
-			if(!main.data.existsPlayer(args[1])) {
-				sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
-				return false;
+			switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+			case All:
+				if(!main.mongoTables.containValue("NickName", args[1], Collection.WhiteList)) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+				}
+				break;
+			case MongoDB:
+				if(!main.mongoTables.containValue("NickName", args[1], Collection.WhiteList)) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+				}
+				break;
+			case MySQL:
+				if(!main.data.existsPlayer(args[1])) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+					return false;
+				}
+				break;
+			case None:
+				break;
+			default:
+				break;
+			
 			}
 			main.ban_list.remove(args[1]);
 			sender.sendMessage(ChatColor.GRAY + "Вы разбанили игрока " + args[1]);
-			main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
-				channel.sendMessage("Тебя Разбанили! Теперь ты можешь играть на сервере!").queue();
-			});
+			switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+			case All:
+				main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
+					channel.sendMessage("Тебя Разбанили! Теперь ты можешь играть на сервере!").queue();
+				});
+				break;
+			case MongoDB:
+				Document doc = main.mongoTables.getDocument("NickName", user, Collection.WhiteList);
+				main.jda.getJDA().openPrivateChannelById(doc.getString("_id")).queue((channel) -> {
+					channel.sendMessage("Тебя Разбанили! Теперь ты можешь играть на сервере!").queue();
+				});
+				break;
+			case MySQL:
+				main.jda.getJDA().openPrivateChannelById(main.data.getIdFromName(args[1])).queue((channel) ->{
+					channel.sendMessage("Тебя Разбанили! Теперь ты можешь играть на сервере!").queue();
+				});
+				break;
+			case None:
+				break;
+			default:
+				break;
+			
+			}
 		case "mute":
 			if(args.length < 5) {
 				sender.sendMessage(ChatColor.GRAY + "/adm ban <Ник> <Длительноесть> <[h/m/s]> <Причина>");
@@ -147,9 +270,28 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				sender.sendMessage(ChatColor.GRAY + "Игрок уже в муте");
 				return false;
 			}
-			if(!main.data.existsPlayer(args[1])) {
-				sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлсте");
-				return false;
+			switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+			case All:
+				if(!main.mongoTables.containValue("NickName", args[1], Collection.WhiteList)) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+				}
+				break;
+			case MongoDB:
+				if(!main.mongoTables.containValue("NickName", args[1], Collection.WhiteList)) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+				}
+				break;
+			case MySQL:
+				if(!main.data.existsPlayer(args[1])) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+					return false;
+				}
+				break;
+			case None:
+				break;
+			default:
+				break;
+			
 			}
 			int timeMute = Integer.parseInt(args[2]);
 			if(timeMute<0) {
@@ -190,9 +332,28 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				sender.sendMessage(ChatColor.GRAY + "Игрок не в муте");
 				return false;
 			}
-			if(!main.data.existsPlayer(args[1])) {
-				sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
-				return false;
+			switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+			case All:
+				if(!main.mongoTables.containValue("NickName", args[1], Collection.WhiteList)) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+				}
+				break;
+			case MongoDB:
+				if(!main.mongoTables.containValue("NickName", args[1], Collection.WhiteList)) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+				}
+				break;
+			case MySQL:
+				if(!main.data.existsPlayer(args[1])) {
+					sender.sendMessage(ChatColor.GRAY + "Такого игрока нет в вайтлисте");
+					return false;
+				}
+				break;
+			case None:
+				break;
+			default:
+				break;
+			
 			}
 			main.mute_list.remove(args[1]);
 			sender.sendMessage("Игрок размучен");
@@ -249,21 +410,7 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 				sender.sendMessage(ChatColor.GRAY + "/bot wrongWord [add/remove]");
 				return false;
 			}
-		case "test":
-			String msg = new PlaceHolder().setUserPlaceHolder(LocaleList.OpenInventory.getString(), args[1]);
-			sender.sendMessage(msg);
-			return false;
-		case "getMod":
-			String item = args[2];
-			player.getInventory().addItem(Main.getPlugin(Main.class).mods.get(item));
-			return false;
-		case "lvl":
-			ItemStack item1 = player.getInventory().getItemInMainHand();
-			player.sendMessage("MinLvl: " + mod.getMinLvl(item1));
-			player.sendMessage("LvlBuff: "+ mod.getLvlBuff(item1));
-			player.sendMessage("Buff: " + mod.getBuff(item1));
-			player.sendMessage("Use: " + mod.getUse(item1));
-			return false;
+		
 		default:
 			sender.sendMessage(ChatColor.GRAY + "/adm [ban/pardon/mute/unmute]");
 			return false;
@@ -288,7 +435,7 @@ public class AdminCommands implements CommandExecutor, TabCompleter{
 	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute","endchest","inventory","badWord","getMod");
+		List<String> arguments = Arrays.asList("ban", "pardon","mute","unmute","endchest","inventory","badWord");
 		List<String> badword = Arrays.asList("add","remove");
 		List<String> time = Arrays.asList("1","2","3","4","5","6","7","8","9");
 		List<String> type = Arrays.asList("ч","м","с");

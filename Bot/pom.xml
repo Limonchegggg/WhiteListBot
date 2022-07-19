@@ -30,7 +30,12 @@
             <artifactId>opus-java</artifactId>
         </exclusion>
     </exclusions>
-</dependency>
+	</dependency>
+	    <dependency> 
+    	<groupId>org.mongodb</groupId> 
+   	 	<artifactId>mongodb-driver-sync</artifactId>
+     	<version>4.0.5</version> 
+    </dependency>
     <dependency>
            <groupId>org.spigotmc</groupId>
            <artifactId>spigot-api</artifactId>

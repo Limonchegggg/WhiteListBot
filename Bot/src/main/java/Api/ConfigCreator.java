@@ -98,6 +98,15 @@ public class ConfigCreator {
     	}
     	return config_Names;
     }
+    
+    public static ArrayList<String> getConfigList(){
+    	ArrayList<String> config_Names = new ArrayList<String>();
+    	for(int i=0; i<file.list().length; i++) {
+    		config_Names.add(file.list()[i]);
+    	}
+    	return config_Names;
+    }
+    
     /**
      * name имя файла вместе с расширением
      */

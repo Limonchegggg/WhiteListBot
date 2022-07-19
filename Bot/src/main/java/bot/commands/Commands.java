@@ -2,11 +2,16 @@ package bot.commands;
 
 import java.awt.Color;
 
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import Database.DataBaseType;
+import Database.mongoDB.MongoDbTables.Collection;
 import Main.Main;
+import Survival.Mechanics.Lvl;
+import Survival.Mechanics.Items.Category;
 import configs.Players;
 import configs.PlayersGetter;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -22,7 +27,8 @@ public class Commands extends ListenerAdapter{
 	@Override
 	public void onMessageReceived(MessageReceivedEvent e){
 		//Игрок добавляет в лист
-		String[] message = e.getMessage().getContentRaw().split(" ");
+		String com = e.getMessage().getContentRaw().toLowerCase();
+		String[] message = com.split(" ");
 		switch(message[0]){
 			case "online":
 					if(!e.getChannel().getId().equals(Players.get().getString("ChannelCommand"))) return;
@@ -35,23 +41,24 @@ public class Commands extends ListenerAdapter{
 						eb.setColor(Color.HSBtoRGB(236,207,4));
 						eb.setAuthor("Shybka");
 						eb.setTitle("◄ Игроки онлайн ►");
-						eb.appendDescription("**▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬**" + "\n**◕ Сейчас никто не играет ◕**");
-						eb.setFooter("но вы всегда можете это исправить ( ͝° ͜ʖ͡°)" + "\nIP: shybka.gomc.fun " + "\nВерсия: 1.18.1");
+						eb.appendDescription("**▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬**" + "\n**◕ Сейчас никто не играет ◕**" + "\n**▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬**");
+						eb.setFooter("Играйте с нами! " + "\nShybka JAVA ►► IP: shybka.gomc.fun" + "\nShybka Bedrok ►► IP: 135.181.126.179:25748" + "\nВерсия: 1.19.0");
 						e.getChannel().sendMessageEmbeds(eb.build()).queue();
 					}else {
 						eb.setColor(Color.HSBtoRGB(236,207,4));
 						eb.setColor(Color.HSBtoRGB(236,207,4));
 						eb.setAuthor("Shybka");
 						eb.setTitle("◄ Игроки онлайн ►");
-						eb.appendDescription("**▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬**" + "\n");
-						eb.setFooter("Играйте с нами! " + "\nIP: shybka.gomc.fun " + "\nВерсия: 1.18.1");
+						eb.appendDescription("**▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬**" + "\n");
+						eb.setFooter("Играйте с нами! " + "\nShybka JAVA ►► IP: shybka.gomc.fun" + "\nShybka Bedrok ►► IP: 135.181.126.179:25748" + "\nВерсия: 1.19.0");
 						for(Player p : Bukkit.getOnlinePlayers()) {
 							eb.appendDescription("**➜ " + p.getName() + "**" + "\n");
 						}
+						eb.appendDescription("**▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬**" + "\n");
 						e.getChannel().sendMessageEmbeds(eb.build()).queue();
 					}
 				break;
-			case "помоги":
+			case "help":
 				if(e.getChannelType() != ChannelType.PRIVATE) {
 					break;
 				}
@@ -105,6 +112,54 @@ public class Commands extends ListenerAdapter{
 				String msg = e.getMessage().getContentRaw().replace("tell " + message[1], "");
 				player2.sendMessage(ChatColor.GRAY + "[ЛС]" + ChatColor.BLUE + "[Discord]" + ChatColor.WHITE + e.getAuthor().getName() + ":" + msg);
 				System.out.println("[WhiteListBot Logger]: " + "[ЛС][Discord] "+ e.getAuthor().getName() + ":" + msg);
+				break;
+			case "stat":
+				Lvl lvl = new Lvl();
+				EmbedBuilder ebuild = new EmbedBuilder();
+				String name;
+				switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+				case All:
+					break;
+				case MongoDB:
+					if(!plugin.mongoTables.containValue("_id", e.getAuthor().getId(), Collection.WhiteList)) {
+						e.getChannel().sendMessage("**Я не нашел вас в моей базе**").queue();
+						return;
+					}
+					Document doc = plugin.mongoTables.getDocument("_id", e.getAuthor().getId(), Collection.WhiteList);
+					name = doc.getString("NickName");
+					ebuild.setColor(Color.HSBtoRGB(236,207,4));
+					ebuild.setAuthor(doc.getString(name));
+					ebuild.setTitle("◄ Ваша статистика ►");
+					ebuild.appendDescription("▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬\n");
+					ebuild.appendDescription("**Ид**: " + doc.getString("_id")+"\n");
+					ebuild.appendDescription("**Уровень**: " + lvl.getLvlFromConfig(name, Category.Digging.getTitle()) + "\n");
+					ebuild.appendDescription("**Прогресс уровня**: " + lvl.getExperienceFromConfig(name, Category.Digging.getTitle()) + "/" + lvl.getExperienceGoalFromConfig(name, Category.Digging.getTitle()) + "\n");
+					if(plugin.mute_list.containsKey(name)) {
+						ebuild.appendDescription("**Мут**: Присутствует" + "\n");
+					}else {
+						ebuild.appendDescription("**Мут**: Отсутствует" + "\n");
+					}
+					if(plugin.ban_list.containsKey(name)) {
+						ebuild.appendDescription("**Бан**: Присутствует" + "\n");
+					}else {
+						ebuild.appendDescription("**Бан**: Отсутствует" + "\n");
+					}
+					if(Bukkit.getPlayer(name) == null) {
+						ebuild.appendDescription("**Статус на сервере**: офлайн" + "\n");
+					}else {
+						ebuild.appendDescription("**Статус на сервере**: онлайн" + "\n");
+					}
+					ebuild.appendDescription("▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬ ▬");
+					ebuild.setFooter("Играйте с нами! " + "\nShybka JAVA ►► IP: shybka.gomc.fun" + "\nShybka Bedrok ►► IP: 135.181.126.179:25748" + "\nВерсия: 1.19.0");
+					e.getChannel().sendMessageEmbeds(ebuild.build()).queue();
+					break;
+				case MySQL:
+					break;
+				case None:
+					break;
+				default:
+					break;
+				}
 				break;
 			default:
 				if(!e.getChannel().getId().equals(pg.getTeleMessageChannelId())) {

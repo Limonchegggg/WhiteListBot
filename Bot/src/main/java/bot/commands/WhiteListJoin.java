@@ -3,8 +3,13 @@ package bot.commands;
 
 import java.util.List;
 
+import com.google.common.collect.ImmutableMap;
+
+import Database.DataBaseType;
+import Database.mongoDB.MongoDbTables.Collection;
 import Main.Main;
 import bot.DiscordData;
+import configs.Players;
 import configs.PlayersGetter;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -19,7 +24,8 @@ public class WhiteListJoin extends ListenerAdapter{
 		if(!e.getChannel().getId().equals(pg.getChanWhiteList())) {
 			return;
 		}
-		if(!message[0].equals("gowl")) {
+		String command = message[0].toLowerCase(); // Убирает чувствительность к регистру
+		if(!command.equals("gowl")) {
 			return;
 		}
 		if(message.length <= 1) {
@@ -41,10 +47,37 @@ public class WhiteListJoin extends ListenerAdapter{
 			e.getChannel().sendMessage("Ник должен состоять только из английских букв и/или цифр").queue();
 			return;
 		}
-		if(plugin.data.existsPlayer(message[1]) || plugin.data.existsDiscord(e.getAuthor().getName()) || plugin.data.existsDiscordId(e.getAuthor().getId())) {
-			e.getChannel().sendMessage("**Такой ник зарегистрирован или у вас уже есть аккаунт на сервере!**").queue();
+		String nick = message[1];
+		String author = e.getAuthor().getName();
+		String ID = e.getAuthor().getId();
+		switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+		case All:
+			if(plugin.mongoTables.containValue("NickName", nick, Collection.WhiteList) || plugin.mongoTables.containValue("Discord", author, Collection.WhiteList) || plugin.mongoTables.containValue("_id", ID, Collection.WhiteList)
+					|| plugin.data.existsPlayer(nick) || plugin.data.existsDiscord(author) || plugin.data.existsDiscordId(ID)) {
+				e.getChannel().sendMessage("**Такой ник зарегистрирован или у вас уже есть аккаунт на сервере!**").queue();
+				return;
+			}
+			break;
+		case MongoDB:
+			if(plugin.mongoTables.containValue("NickName", nick, Collection.WhiteList) || plugin.mongoTables.containValue("Discord", author, Collection.WhiteList) || plugin.mongoTables.containValue("_id", ID, Collection.WhiteList)) {
+				e.getChannel().sendMessage("**Такой ник зарегистрирован или у вас уже есть аккаунт на сервере!**").queue();
+				return;
+			}
+			break;
+		case MySQL:
+			if(plugin.data.existsPlayer(nick) || plugin.data.existsDiscord(author) || plugin.data.existsDiscordId(ID)) {
+				e.getChannel().sendMessage("**Такой ник зарегистрирован или у вас уже есть аккаунт на сервере!**").queue();
+				return;
+			}
+			break;
+		case None:
+			e.getChannel().sendMessage("**Вайтлист отключен на сервере или работает по другому!**").queue();
 			return;
+		default:
+			break;
+		
 		}
+		
 		if(pg.isTicket()) {
 			if(DiscordData.get().getStringList("Queue").contains(e.getAuthor().getId())) {
 				e.getChannel().sendMessage("**Вы уже состоите в очереди**").queue();
@@ -78,16 +111,31 @@ public class WhiteListJoin extends ListenerAdapter{
 				switch(e.getReactionEmote().getName()) {
 				//Палец вверх
 				case "👍":
-					message.getAuthor().openPrivateChannel().queue((channel) -> {
-						channel.sendMessage("Дорогой `" + Nick + "`! Теперь ты можешь играть на сервере! 😎").queue();
-					});
+					switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+					case All:
+						plugin.mongoTables.addDocument(plugin.mongoTables.CreateDocument(ImmutableMap.of("_id", DiscordId, "NickName", Nick, "Discord", Discord)), Collection.WhiteList);
+						plugin.data.cratePlayer(Nick, Discord, DiscordId);
+						plugin.sqld.CreatePlayer(Nick, Discord, DiscordId);
+						break;
+					case MongoDB:
+						plugin.mongoTables.addDocument(plugin.mongoTables.CreateDocument(ImmutableMap.of("_id", DiscordId, "NickName", Nick, "Discord", Discord)), Collection.WhiteList);
+						break;
+					case MySQL:
+						plugin.data.cratePlayer(Nick, Discord, DiscordId);
+						plugin.sqld.CreatePlayer(Nick, Discord, DiscordId);
+						break;
+					default:
+						break;
+					
+					}
 					List<String> queue = DiscordData.get().getStringList("Queue");
 					queue.remove(DiscordId);
 					DiscordData.get().set("Queue", queue);
 					DiscordData.save();
 					DiscordData.reload();
-					plugin.data.cratePlayer(Nick, Discord, DiscordId);
-					plugin.sqld.CreatePlayer(Nick, Discord, DiscordId);
+					message.getAuthor().openPrivateChannel().queue((channel) -> {
+						channel.sendMessage("Дорогой `" + Nick + "`! Теперь ты можешь играть на сервере! 😎").queue();
+					});
 					return;
 				//Палец вниз
 				case "👎":

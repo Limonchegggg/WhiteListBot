@@ -19,6 +19,8 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
+import Database.DataBaseType;
+import Database.mongoDB.MongoDbTables.Collection;
 import Main.Main;
 import Survival.Mechanics.Lvl;
 import Survival.Mechanics.Items.Category;
@@ -37,15 +39,47 @@ public class JoinEvent implements Listener{
 	public void CheckList(PlayerJoinEvent e){
 		Player player = e.getPlayer();
 		//Проверка игрока в датабазе
-			if(!plugin.data.existsPlayer(e.getPlayer().getName())) {
-					String msg = Players.get().getString("Kick_Message");
-					for(int a = 0; a < msg.length(); a++) {
-						msg = ChatColor.translateAlternateColorCodes('&', msg);
-					}
-					e.setJoinMessage("");
-					player.kickPlayer(msg);
-					return;
+		
+		switch(DataBaseType.getByName(Players.get().getString("DatabaseType"))) {
+		case All:
+			if(!plugin.mongoTables.containValue("NickName", player.getName(), Collection.WhiteList)) {
+				String msg = Players.get().getString("Kick_Message");
+				for(int a = 0; a < msg.length(); a++) {
+					msg = ChatColor.translateAlternateColorCodes('&', msg);
+				}
+				e.setJoinMessage(null);
+				player.kickPlayer(msg);
+				return;
 			}
+			break;
+		case MongoDB:
+			if(!plugin.mongoTables.containValue("NickName", player.getName(), Collection.WhiteList)) {
+				String msg = Players.get().getString("Kick_Message");
+				for(int a = 0; a < msg.length(); a++) {
+					msg = ChatColor.translateAlternateColorCodes('&', msg);
+				}
+				e.setJoinMessage(null);
+				player.kickPlayer(msg);
+				return;
+		}
+			break;
+		case MySQL:
+		if(!plugin.data.existsPlayer(e.getPlayer().getName())) {
+			String msg = Players.get().getString("Kick_Message");
+			for(int a = 0; a < msg.length(); a++) {
+				msg = ChatColor.translateAlternateColorCodes('&', msg);
+			}
+			e.setJoinMessage(null);
+			player.kickPlayer(msg);
+			return;
+		}
+		break;
+		case None:
+			break;
+		default:
+			break;
+		
+		}
 			if(plugin.ban_list.containsKey(e.getPlayer().getName())) {
 				player.kickPlayer("Вы временно заблокированы");
 				return;
@@ -74,7 +108,6 @@ public class JoinEvent implements Listener{
 			player.setScoreboard(board);
 			
 			
-			
 		}
 	@EventHandler
 	public void QuitPlaeyr(PlayerQuitEvent e) {
@@ -85,7 +118,7 @@ public class JoinEvent implements Listener{
 			
 			Lvl lvl = new Lvl();
 			lvl.SaveLvl(player.getName());
-			
+			if(board.getEntryTeam(player.getName()) == null) return;
 			board.getTeam(player.getName()).unregister();
 			
 	}
