@@ -1,0 +1,15 @@
+name: ShybkaBot
+main: Main.Main
+version: 0.2
+author: Limoncheggg
+api-version: 1.19
+commands:
+  botReload:
+    description: Перезагружает плагин/конфиги/бота
+    permission: ShybkaBot.reload
+  botStart:
+    description: Запускает бота
+    permission: ShybkaBot.start
+  botStop:
+    description: Останавливает бота
+    permission: ShybkaBot.stop
